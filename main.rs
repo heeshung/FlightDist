@@ -182,6 +182,7 @@ fn main() {
     //initialize unit
     let mut unit = "mi";
 
+    println!("");
     println!("Welcome to FlightDist. For help, type 'help'.");
     loop {
         let result = queryhandler(&data, unit);
