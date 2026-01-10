@@ -74,6 +74,7 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
             }
         }
 
+        println!("");
         println!("IATA/ICAO-Airport Name                                      Distance        Total");
         println!("---------------------------------------------------------------------------------");
 
