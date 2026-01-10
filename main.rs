@@ -140,7 +140,9 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 }
 
 fn helpdisp(){
-    println!("FlightDist Help: Enter airport codes (ICAO/IATA), separated by spaces. Output is in format 'ICAO'-'Airport Name', 'Distance', 'Total Distance'.")
+    println!("FlightDist Help: Enter airport codes (ICAO/IATA), separated by spaces. Output is in format 'ICAO'-'Airport Name', 'Distance', 'Total Distance'.");
+    println!("Flags:");
+    println!("--unit <mi><km><nm>: Set units for miles, kilometers, or nautical miles.");
 }
 
 fn main() {
