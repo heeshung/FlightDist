@@ -218,7 +218,7 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
     }
 
     //check for single flag (search function)
-    else if queries.len() == 1 {
+    else if (queries.len() == 1) && (queries[0].contains("=") == false) {
         airportsearch(&queries[0], airports);
     }
 
@@ -315,31 +315,60 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
             if airportfound == false {
                 let querysplit = query.split(", ");
                 let querycollect = querysplit.collect::<Vec<&str>>();
-                //try to match city and country first
+                //try to match city and country or city and state first
                 if querycollect.len() > 1{
-                    for airport in airports.iter() {
-                        if (airport.city.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.country.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
-                            if lathold == 0.0 {
-                                lathold = airport.lat;
-                                lat = airport.lat;
+                    if querycollect[1].len() == 2{
+                        for airport in airports.iter() {
+                            if (airport.city.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.country.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
+                                if lathold == 0.0 {
+                                    lathold = airport.lat;
+                                    lat = airport.lat;
+                                }
+                                else {
+                                    lathold = lat;
+                                    lat = airport.lat;
+                                }
+                                if lonhold == 0.0 {
+                                    lonhold = airport.lon;
+                                    lon = airport.lon;
+                                }
+                                else {
+                                    lonhold = lon;
+                                    lon = airport.lon;
+                                }
+                                airportname = &airport.name;
+                                airportiata = &airport.iata;
+                                airporticao = &airport.icao;
+                                airportfound = true;
+                                break;
                             }
-                            else {
-                                lathold = lat;
-                                lat = airport.lat;
+                        }
+                    }
+                    else {
+                        for airport in airports.iter() {
+                            if (airport.city.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.state.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
+                                if lathold == 0.0 {
+                                    lathold = airport.lat;
+                                    lat = airport.lat;
+                                }
+                                else {
+                                    lathold = lat;
+                                    lat = airport.lat;
+                                }
+                                if lonhold == 0.0 {
+                                    lonhold = airport.lon;
+                                    lon = airport.lon;
+                                }
+                                else {
+                                    lonhold = lon;
+                                    lon = airport.lon;
+                                }
+                                airportname = &airport.name;
+                                airportiata = &airport.iata;
+                                airporticao = &airport.icao;
+                                airportfound = true;
+                                break;
                             }
-                            if lonhold == 0.0 {
-                                lonhold = airport.lon;
-                                lon = airport.lon;
-                            }
-                            else {
-                                lonhold = lon;
-                                lon = airport.lon;
-                            }
-                            airportname = &airport.name;
-                            airportiata = &airport.iata;
-                            airporticao = &airport.icao;
-                            airportfound = true;
-                            break;
                         }
                     }
                 }
@@ -407,7 +436,7 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
                 let paddingiata = 3-airportiata.len();
                 let paddingicao = 4-airporticao.len();
                 let paddingname = 75-airportname.len();
-                println!("{:>paddingiata$}/{:>paddingicao$} - {} {:>paddingname$.1} {}, {:>8.1} {}", airportiata.magenta(), airporticao.magenta(), airportname, distance, unit, totaldist, unit);
+                println!("{:>paddingiata$}/{:>paddingicao$} - {} {:>paddingname$.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, distance, unit, totaldist, unit);
             }
             else {
                 println!("'{}' can not be found.", query);
