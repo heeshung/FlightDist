@@ -1,8 +1,14 @@
 use serde::{Deserialize};
 use std::fs;
 use geoutils::Location;
-use inquire::Text;
+use inquire::{
+    error::{CustomUserError, InquireResult},
+    required,
+    ui::{Attributes, Color, RenderConfig, StyleSheet, Styled},
+    CustomType, MultiSelect, Select, Text,
+};
 use colored::Colorize;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -180,6 +186,70 @@ fn airportsearch(query: &String, airports: Vec<Airport>) {
     }
 }
 
+fn payee_suggestor(input: &str, airports: <Vec<Airport>>) -> Result<Vec<String>, CustomUserError> {
+    let input = input.to_lowercase();
+    let mut airportsearch: Vec<String>;
+
+    for airport in airports {
+        let mut airportiata = airport.iata;
+        airportsearch.push(airportiata+=airport.icao+=airport.name);
+    }
+
+    Ok(get_existing_payees(airportsearch)
+        .iter()
+        .filter(|p| p.to_lowercase().contains(&input))
+        .take(5)
+        .map(|p| String::from(*p))
+        .collect())
+}
+
+fn get_existing_payees(airportsearch) -> &'static [&'static str] {
+    &[
+        "Armstrong-Jacobs",
+        "Barrows-Becker",
+        "Becker PLC",
+        "Bins, Fritsch and Hartmann",
+        "Feil PLC",
+        "Frami-Fisher",
+        "Goyette Group",
+        "Heathcote PLC",
+        "Hilpert-Kovacek",
+        "Keebler Inc",
+        "Kuhn-Rippin",
+        "McGlynn LLC",
+        "McKenzie, Kris and Yundt",
+        "Medhurst, Conroy and Will",
+        "Ruecker LLC",
+        "Steuber, Casper and Hermann",
+        "Torphy-Boyer",
+        "Volkman, Smith and Shanahan",
+        "VonRueden-Rath",
+        "Waelchi and Sons",
+    ]
+}
+
+fn get_render_config() -> RenderConfig<'static> {
+    let mut render_config = RenderConfig::default();
+    render_config.prompt_prefix = Styled::new("$").with_fg(Color::LightRed);
+    render_config.highlighted_option_prefix = Styled::new("➠").with_fg(Color::LightYellow);
+    render_config.selected_checkbox = Styled::new("☑").with_fg(Color::LightGreen);
+    render_config.scroll_up_prefix = Styled::new("⇞");
+    render_config.scroll_down_prefix = Styled::new("⇟");
+    render_config.unselected_checkbox = Styled::new("☐");
+
+    render_config.error_message = render_config
+        .error_message
+        .with_prefix(Styled::new("❌").with_fg(Color::LightRed));
+
+    render_config.answer = StyleSheet::new()
+        .with_attr(Attributes::ITALIC)
+        .with_fg(Color::LightYellow);
+
+    render_config.help_message = StyleSheet::new().with_fg(Color::DarkYellow);
+
+    render_config
+}
+
 fn queryhandler(data: &String, unit: &str) -> i32 {
 
     let airports: Vec<Airport> = serde_json::from_str(&data).expect("JSON Error");
@@ -196,9 +266,14 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
     let mut totaldist: f64 = 0.0;
 
     let mut queries: Vec<String> = vec![];
-    let interactiveargs = Text::new(">> ").prompt();
+    inquire::set_global_render_config(get_render_config());
+    let _interactiveargs = Text::new(">> ")
+        .with_autocomplete(&payee_suggestor(airports))
+        .with_page_size(5)
+        .prompt();
 
-    let unwrappedargs = interactiveargs.unwrap();
+    //let unwrappedargs = "jfk-sea";
+    let unwrappedargs = _interactiveargs.unwrap();
 
     //split for space delimiter
     let splitspaceargs = unwrappedargs.split("-");
