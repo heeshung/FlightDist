@@ -10,5 +10,5 @@ geoutils = "0.5"
 inquire = "0.9.1"
 
 [[bin]]
-name = "airportdist"
+name = "FlightDist"
 path = "main.rs"

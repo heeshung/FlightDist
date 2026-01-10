@@ -57,14 +57,14 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
     else {
         //check for flags
         for query in queries.iter() {
-            if query.contains("--UNIT") {
-                if query == ("--UNIT-MI") {
+            if query.contains("UNIT-") {
+                if query == ("UNIT-MI") {
                     return 2;
                 }
-                else if query == ("--UNIT-NM") {
+                else if query == ("UNIT-NM") {
                     return 3;
                 }
-                else if query == ("--UNIT-KM") {
+                else if query == ("UNIT-KM") {
                     return 4;
                 }
                 else {
@@ -73,6 +73,10 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
                 return 0;
             }
         }
+
+        println!("IATA/ICAO-Airport Name                                      Distance        Total");
+        println!("---------------------------------------------------------------------------------");
+
         for query in queries.iter() {
             airportfound = false;
             for airport in airports.iter() {
@@ -130,7 +134,9 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
             if airportfound == true {
                 let distance = distancecalc(lathold,lonhold,lat,lon,unit);
                 totaldist += distance;
-                println!("{}/{}-{}, {:.1} {}, {:.1} {}", airportiata, airporticao, airportname, distance, unit, totaldist, unit);
+                //let distlog = distance.log10();
+                let padding = 55-airportname.len();
+                println!("{}/{}-{} {:>padding$.1} {}, {:>8.1} {}", airportiata, airporticao, airportname, distance, unit, totaldist, unit);
             }
             else {
                 println!("'{}' is not a valid airport.", query);
