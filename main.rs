@@ -124,7 +124,6 @@ fn airportsearch(query: &String, airports: Vec<Airport>) {
                 //try to match city first
                 for airport in airports.iter() {
                     if airport.city.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
-                        println!("yes");
                         airporticao = &airport.icao;
                         airportiata = &airport.iata;
                         airportname = &airport.name;
