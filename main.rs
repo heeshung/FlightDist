@@ -407,7 +407,7 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
                 let paddingiata = 3-airportiata.len();
                 let paddingicao = 4-airporticao.len();
                 let paddingname = 75-airportname.len();
-                println!("{:>paddingiata$}/{:>paddingicao$} - {} {:>paddingname$.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, distance, unit, totaldist, unit);
+                println!("{:>paddingiata$}/{:>paddingicao$} - {} {:>paddingname$.1} {}, {:>8.1} {}", airportiata.magenta(), airporticao.magenta(), airportname, distance, unit, totaldist, unit);
             }
             else {
                 println!("'{}' can not be found.", query);
