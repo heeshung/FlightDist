@@ -273,7 +273,7 @@ fn helpdisp() {
     println!("Enter airports separated by hyphens (-).  ICAO and IATA codes can be used.  Airports can also be searched via city and country code in the following format: 'New York, US'.");
     println!("Airports can also be searched by name.");
     println!("");
-    println!("Example: 'hnd-ksea-la guardia-cape town, za'");
+    println!("{}{}", "Example: ", "'hnd-ksea-la guardia-cape town, za'".cyan());
     println!("");
     println!("Commands:");
     println!("{}{}", "'help'".cyan(), ": Displays this help screen.");
