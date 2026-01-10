@@ -451,8 +451,7 @@ fn helpdisp() {
     println!("Enter single term to use search function.");
     println!("");
     println!("{}", "Flight Distance Function".yellow().bold());
-    println!("Enter airports separated by hyphens (-).  ICAO and IATA codes can be used.  Airports can also be searched via city and country code in the following format: 'New York, US'.");
-    println!("Airports can also be searched by name.");
+    println!("Enter terms separated by hyphens (-).");
     println!("");
     println!("{}{}", "Example: ", "'hnd-ksea-la guardia-cape town, za'".cyan());
     println!("");
