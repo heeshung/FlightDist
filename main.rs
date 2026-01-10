@@ -144,7 +144,7 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
                 }
             }
             //search in cities
-            else {
+            if airportfound == false {
                 let querysplit = query.split(", ");
                 let querycollect = querysplit.collect::<Vec<&str>>();
                 //try to match city and country first
