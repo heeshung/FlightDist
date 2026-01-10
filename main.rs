@@ -75,8 +75,8 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
         }
 
         println!("");
-        println!("IATA/ICAO-Airport Name                                      Distance        Total");
-        println!("---------------------------------------------------------------------------------");
+        println!("IATA/ICAO-Airport Name                                                          Distance        Total");
+        println!("-----------------------------------------------------------------------------------------------------");
 
         for query in queries.iter() {
             airportfound = false;
@@ -136,7 +136,7 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
                 let distance = distancecalc(lathold,lonhold,lat,lon,unit);
                 totaldist += distance;
                 //let distlog = distance.log10();
-                let padding = 55-airportname.len();
+                let padding = 75-airportname.len();
                 println!("{}/{}-{} {:>padding$.1} {}, {:>8.1} {}", airportiata, airporticao, airportname, distance, unit, totaldist, unit);
             }
             else {
