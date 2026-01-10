@@ -2,15 +2,16 @@ use serde::{Deserialize};
 use std::fs;
 use geoutils::Location;
 use inquire::Text;
+use colored::Colorize;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
     icao: String,
     iata: String,
     name: String,
-    //city: String,
+    city: String,
     //state: String,
-    //country: String,
+    country: String,
     //elevation: i32,
     lat: f64,
     lon: f64
@@ -37,34 +38,33 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
     let unwrappedargs = interactiveargs.unwrap();
 
     //split for space delimiter
-    let splitspaceargs = unwrappedargs.split(" ");
+    let splitspaceargs = unwrappedargs.split("-");
 
     let collection = splitspaceargs.collect::<Vec<&str>>();
     for args in collection {
-        queries.push(args.to_string().to_ascii_uppercase());
+        queries.push(args.to_string());
     }
 
-
     //check if help
-    if queries[0] == "HELP" {
+    if queries[0].to_ascii_lowercase() == "help" {
         helpdisp();
     }
 
-    else if queries[0] == "EXIT" {
+    else if queries[0].to_ascii_lowercase() == "exit" {
         return 1; 
     }
 
     else {
         //check for flags
         for query in queries.iter() {
-            if query.contains("UNIT-") {
-                if query == ("UNIT-MI") {
+            if query.to_ascii_lowercase().contains("unit=") {
+                if query == ("unit=mi") {
                     return 2;
                 }
-                else if query == ("UNIT-NM") {
+                else if query == ("unit=nm") {
                     return 3;
                 }
-                else if query == ("UNIT-KM") {
+                else if query == ("unit=km") {
                     return 4;
                 }
                 else {
@@ -75,15 +75,21 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
         }
 
         println!("");
-        println!("IATA/ICAO-Airport Name                                                          Distance        Total");
-        println!("-----------------------------------------------------------------------------------------------------");
+        println!("{}{}{}","IATA/ICAO - Airport Name".blue().bold(), "                                                          Distance        ".blue().bold(), "Total".blue().bold());
+        println!("-------------------------------------------------------------------------------------------------------");
 
         for query in queries.iter() {
             airportfound = false;
-            for airport in airports.iter() {
-                if query.chars().count()==4 {
+            //check if empty term
+            if query.trim().len() == 0 {
+                println!("Empty term.");
+                continue;
+            }
+            //search icaos
+            if query.len() == 4 {
+                for airport in airports.iter() {
                     //check for icao identifiers
-                    if *query == airport.icao {
+                    if query.to_ascii_uppercase() == airport.icao {
                         if lathold == 0.0 {
                             lathold = airport.lat;
                             lat = airport.lat;
@@ -104,11 +110,15 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
                         airportiata = &airport.iata;
                         airporticao = &airport.icao;
                         airportfound = true;
+                        break;
                     }
                 }
-                else if query.chars().count()==3 {
+            }
+            //search iatas
+            else if query.len() == 3 {
+                for airport in airports.iter() {
                     //check for iata identifiers
-                    if *query == airport.iata {
+                    if query.to_ascii_uppercase() == airport.iata {
                         if lathold == 0.0 {
                             lathold = airport.lat;
                             lat = airport.lat;
@@ -129,20 +139,113 @@ fn queryhandler(data: &String, unit: &str) -> i32 {
                         airportiata = &airport.iata;
                         airporticao = &airport.icao;
                         airportfound = true;
+                        break;
+                    }
+                }
+            }
+            //search in cities
+            else {
+                let querysplit = query.split(", ");
+                let querycollect = querysplit.collect::<Vec<&str>>();
+                //try to match city and country first
+                if querycollect.len() > 1{
+                    for airport in airports.iter() {
+                        if (airport.city.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.country.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
+                            if lathold == 0.0 {
+                                lathold = airport.lat;
+                                lat = airport.lat;
+                            }
+                            else {
+                                lathold = lat;
+                                lat = airport.lat;
+                            }
+                            if lonhold == 0.0 {
+                                lonhold = airport.lon;
+                                lon = airport.lon;
+                            }
+                            else {
+                                lonhold = lon;
+                                lon = airport.lon;
+                            }
+                            airportname = &airport.name;
+                            airportiata = &airport.iata;
+                            airporticao = &airport.icao;
+                            airportfound = true;
+                            break;
+                        }
+                    }
+                }
+                //if only one search term
+                else {
+                    //try to match city first
+                    for airport in airports.iter() {
+                        if airport.city.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()){
+                            if lathold == 0.0 {
+                                lathold = airport.lat;
+                                lat = airport.lat;
+                            }
+                            else {
+                                lathold = lat;
+                                lat = airport.lat;
+                            }
+                            if lonhold == 0.0 {
+                                lonhold = airport.lon;
+                                lon = airport.lon;
+                            }
+                            else {
+                                lonhold = lon;
+                                lon = airport.lon;
+                            }
+                            airportname = &airport.name;
+                            airportiata = &airport.iata;
+                            airporticao = &airport.icao;
+                            airportfound = true;
+                            break;
+                        }
+                    }
+                    //search in airport name
+                    if airportfound == false {
+                        for airport in airports.iter() {
+                            if airport.name.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
+                                if lathold == 0.0 {
+                                    lathold = airport.lat;
+                                    lat = airport.lat;
+                                }
+                                else {
+                                    lathold = lat;
+                                    lat = airport.lat;
+                                }
+                                if lonhold == 0.0 {
+                                    lonhold = airport.lon;
+                                    lon = airport.lon;
+                                }
+                                else {
+                                    lonhold = lon;
+                                    lon = airport.lon;
+                                }
+                                airportname = &airport.name;
+                                airportiata = &airport.iata;
+                                airporticao = &airport.icao;
+                                airportfound = true;
+                                break;
+                            }
+                        }
                     }
                 }
             }
             if airportfound == true {
                 let distance = distancecalc(lathold,lonhold,lat,lon,unit);
                 totaldist += distance;
-                //let distlog = distance.log10();
-                let padding = 75-airportname.len();
-                println!("{}/{}-{} {:>padding$.1} {}, {:>8.1} {}", airportiata, airporticao, airportname, distance, unit, totaldist, unit);
+                let paddingiata = 3-airportiata.len();
+                let paddingicao = 4-airporticao.len();
+                let paddingname = 75-airportname.len();
+                println!("{:>paddingiata$}/{:>paddingicao$} - {} {:>paddingname$.1} {}, {:>8.1} {}", airportiata, airporticao, airportname, distance, unit, totaldist, unit);
             }
             else {
-                println!("'{}' is not a valid airport.", query);
+                println!("'{}' can not be found.", query);
             }
         }
+        println!("");
     }
     return 0;
 }
@@ -166,12 +269,17 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 }
 
 fn helpdisp() {
-    println!("FlightDist Help: Enter airport codes (ICAO/IATA), separated by spaces. Output is in format 'IATA/ICAO'-'Airport Name', 'Distance', 'Total Distance'.");
+    println!("");
+    println!("Enter airports separated by hyphens (-).  ICAO and IATA codes can be used.  Airports can also be searched via city and country code in the following format: 'New York, US'.");
+    println!("Airports can also be searched by name.");
+    println!("");
+    println!("Example: 'hnd-ksea-la guardia-cape town, za'");
     println!("");
     println!("Commands:");
-    println!("'help': Displays this help screen.");
-    println!("'unit-mi'/'unit-km'/'unit-nm': Set units for miles, kilometers, or nautical miles.");
-    println!("'exit': Exits FlightDist.");
+    println!("{}{}", "'help'".cyan(), ": Displays this help screen.");
+    println!("{}/{}/{}{}", "'unit=mi'".cyan(), "'unit=km'".cyan(), "'unit=nm'".cyan(), ": Set units for miles, kilometers, or nautical miles.");
+    println!("{}{}", "'exit'".cyan(), ": Exits FlightDist.");
+    println!("");
 }
 
 fn main() {
