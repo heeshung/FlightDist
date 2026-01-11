@@ -496,7 +496,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
             //handle blank elevations
             let elevationfinal = elevation.unwrap_or(-9999999);
             if elevationfinal == -9999999 {
-                println!("{}{}{}", "Elevation: ".yellow(), "N/A", " ft");
+                println!("{}", "Elevation: ".yellow());
             }
             else {
                 println!("{}{}{}", "Elevation: ".yellow(), elevationfinal, " ft");
