@@ -35,7 +35,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
     let mut totaldist: f64 = 0.0;
 
     let mut queries: Vec<String> = vec![];
-    let interactiveargs = Text::new(">> ").prompt();
+    let interactiveargs = Text::new(">>").prompt();
 
     let unwrappedargs = interactiveargs.unwrap();
 
