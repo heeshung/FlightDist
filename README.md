@@ -6,7 +6,7 @@ FlightDist is a versatile and fast flight distance calculator.
 
 ### Term Formatting
 Acceptable term formats in order of accuracy (highest to lowest):
- -ICAO Code: 'KABE'
+- ICAO Code: 'KABE'
  -IATA Code: 'ABE'
  -FAA LID: 'ABE'
  -Airport Name: 'Lehigh Valley International'
