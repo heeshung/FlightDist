@@ -213,7 +213,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
                 else {
                     //try to match local id
                     for airport in airports.iter() {
-                        if airport.local_code.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
+                        if airport.local_code.to_ascii_lowercase() == querycollect[0].to_ascii_lowercase() {
                             if lathold == 0.0 {
                                 lathold = airport.latitude_deg;
                                 lat = airport.latitude_deg;
@@ -421,7 +421,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
             else {
                 //try to match local id
                 for airport in airports.iter() {
-                    if airport.local_code.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
+                    if airport.local_code.to_ascii_lowercase() == querycollect[0].to_ascii_lowercase() {
                         airporticao = &airport.icao_code;
                         airportiata = &airport.iata_code;
                         airportlocalid = &airport.local_code;
@@ -486,7 +486,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
             println!("{}{}", "Airport Name: ".yellow(), airportname);
             println!("{}{}", "IATA Code: ".yellow(), airportiata);
             println!("{}{}", "ICAO Code: ".yellow(), airporticao);
-            println!("{}{}", "FAA LID: ".yellow(), airportlocalid);
+            println!("{}{}", "Local ID/FAA LID: ".yellow(), airportlocalid);
             println!("{}{}", "City: ".yellow(), airportcity);
             println!("{}{}", "State: ".yellow(), airportstate);
             println!("{}{}", "Country: ".yellow(), airportcountry);
