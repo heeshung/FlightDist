@@ -595,7 +595,7 @@ fn main() {
     let mut unit = "mi";
 
     println!("{}", "FlightDist v1.3.4".yellow().bold());
-    println!("{} airports loaded.  For help, type 'help'.", airports.len());
+    println!("For help, type 'help'.");
     println!("");
     loop {
         let result = queryhandler(&airports, unit);
