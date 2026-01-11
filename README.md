@@ -27,7 +27,8 @@ Enter terms separated by hyphens (-).
 - ```exit```: Exits FlightDist.
 
 ## Example
-```hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL
+```
+hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL
 
 IATA/ICAO - Airport Name                                                          Distance        Total
 -------------------------------------------------------------------------------------------------------
