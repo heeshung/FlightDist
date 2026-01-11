@@ -554,7 +554,7 @@ fn helpdisp() {
 }
 
 fn main() {
-    //read files and parse json
+    //read files and parse csv
     let file = "airports/airports.csv";
     let data = fs::read_to_string(file).expect("File Read Error");
 
