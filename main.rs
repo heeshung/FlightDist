@@ -93,7 +93,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
                 continue;
             }
             //search icaos
-            if query.len() == 4 {
+            if query.chars().count() == 4 {
                 for airport in airports.iter() {
                     //check for icao identifiers
                     if query.to_ascii_lowercase() == airport.icao_code.to_ascii_lowercase() {
@@ -122,7 +122,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
                 }
             }
             //search iatas
-            else if query.len() == 3 {
+            else if query.chars().count() == 3 {
                 for airport in airports.iter() {
                     //check for iata identifiers
                     if query.to_ascii_lowercase() == airport.iata_code.to_ascii_lowercase() {
@@ -298,9 +298,9 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
             if airportfound == true {
                 let distance = distancecalc(lathold,lonhold,lat,lon,unit);
                 totaldist += distance;
-                let paddingiata = 3-airportiata.len();
-                let paddingicao = 4-airporticao.len();
-                let paddingname = 75-airportname.len();
+                let paddingiata = 3-airportiata.chars().count();
+                let paddingicao = 4-airporticao.chars().count();
+                let paddingname = 75-airportname.chars().count();
                 println!("{:>paddingiata$}/{:>paddingicao$} - {} {:>paddingname$.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, distance, unit, totaldist, unit);
             }
             else {
@@ -333,7 +333,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
 
     else {
         //search icaos
-        if query.len() == 4 {
+        if query.chars().count() == 4 {
             for airport in airports.iter() {
                 //check for icao identifiers
                 if query.to_ascii_lowercase() == airport.icao_code.to_ascii_lowercase() {                
@@ -354,7 +354,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
             }
         }
         //search iatas
-        else if query.len() == 3 {
+        else if query.chars().count() == 3 {
             for airport in airports.iter() {
                 //check for iata identifiers
                 if query.to_ascii_lowercase() == airport.iata_code.to_ascii_lowercase() {                
