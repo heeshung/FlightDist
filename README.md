@@ -6,13 +6,13 @@ FlightDist is a versatile and fast flight distance calculator.
 
 ### Term Formatting
 Acceptable term formats in order of accuracy (highest to lowest):
-- ICAO Code: 'KABE'
- -IATA Code: 'ABE'
- -FAA LID: 'ABE'
- -Airport Name: 'Lehigh Valley International'
- -City, State Name: 'Allentown, PA'
- -City, Country Code: 'Allentown, US'
- -City Only: 'Allentown'
+- ICAO Code: ```KABE```
+- IATA Code: 'ABE'
+- FAA LID: 'ABE'
+- Airport Name: 'Lehigh Valley International'
+- City, State Name: 'Allentown, PA'
+- City, Country Code: 'Allentown, US'
+- City Only: 'Allentown'
 
 ### Search Function
 Enter single term to use search function.
