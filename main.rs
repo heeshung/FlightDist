@@ -506,6 +506,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
             println!("'{}' can not be found.", query);
         }
     }
+    println!("");
 }
 
 fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f64 {
@@ -593,8 +594,9 @@ fn main() {
     //initialize unit
     let mut unit = "mi";
 
+    println!("{}", "FlightDist v1.3.4".yellow().bold());
+    println!("{} airports loaded.  For help, type 'help'.", airports.len());
     println!("");
-    println!("Welcome to FlightDist. For help, type 'help'.");
     loop {
         let result = queryhandler(&airports, unit);
         if result == 2 {
