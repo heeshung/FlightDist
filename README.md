@@ -22,9 +22,9 @@ Enter single term to use search function.
 Enter terms separated by hyphens (-).
 
 ### Commands
-```help```: Displays help screen.
-```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
-```exit```: Exits FlightDist.
+- ```help```: Displays help screen.
+- ```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
+- ```exit```: Exits FlightDist.
 
 ## Example
 ```hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL
@@ -35,4 +35,5 @@ HND/RJTT - Tokyo Haneda International Airport                                   
 SEA/KSEA - Seattle-Tacoma International Airport                                  4803.5 mi,   4803.5 mi
 ORD/KORD - Chicago O'Hare International Airport                                  1720.6 mi,   6524.1 mi
 CPT/FACT - Cape Town International Airport                                       8513.0 mi,  15037.1 mi
-FLL/KFLL - Fort Lauderdale Hollywood International Airport                       7668.9 mi,  22706.0 mi```
+FLL/KFLL - Fort Lauderdale Hollywood International Airport                       7668.9 mi,  22706.0 mi
+```
