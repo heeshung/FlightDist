@@ -2,8 +2,13 @@
 FlightDist is a versatile and fast flight distance calculator.
 
 ## Usage
-
 Windows: Download and unzip release, run FlightDist.
+
+### Search Function
+Enter single term to use search function.
+
+### Flight Distance Function
+Enter terms separated by hyphens (-).
 
 ### Term Formatting
 Acceptable term formats in order of accuracy (highest to lowest):
@@ -15,12 +20,6 @@ Acceptable term formats in order of accuracy (highest to lowest):
 - City, Country Code: ```Allentown, US```
 - City Only: ```Allentown```
 
-### Search Function
-Enter single term to use search function.
-
-### Flight Distance Function
-Enter terms separated by hyphens (-).
-
 ### Commands
 - ```help```: Displays help screen.
 - ```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
@@ -28,7 +27,7 @@ Enter terms separated by hyphens (-).
 
 ## Example
 ```
-hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL
+>> hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL
 
 IATA/ICAO - Airport Name                                                          Distance        Total
 -------------------------------------------------------------------------------------------------------

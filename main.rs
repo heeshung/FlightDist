@@ -529,6 +529,13 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 
 fn helpdisp() {
     println!("");
+    println!("{}", "Search Function".yellow().bold());
+    println!("Enter single term to use search function.");
+    println!("");
+    println!("{}", "Flight Distance Function".yellow().bold());
+    println!("Enter terms separated by hyphens ({}).", "'-'".cyan());
+    println!("{}{}", "Example: ", "'hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL'".cyan());
+    println!("");
     println!("{}", "Term Formatting".yellow().bold());
     println!("Acceptable term formats in order of accuracy (highest to lowest):");
     println!("{}{}", "-ICAO Code: ", "'KABE'".cyan());
@@ -538,13 +545,6 @@ fn helpdisp() {
     println!("{}{}", "-City, State Name: ", "'Allentown, PA'".cyan());
     println!("{}{}", "-City, Country Code: ", "'Allentown, US'".cyan());
     println!("{}{}", "-City Only: ", "'Allentown'".cyan());
-    println!("");
-    println!("{}", "Search Function".yellow().bold());
-    println!("Enter single term to use search function.");
-    println!("");
-    println!("{}", "Flight Distance Function".yellow().bold());
-    println!("Enter terms separated by hyphens (-).");
-    println!("{}{}", "Example: ", "'hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL'".cyan());
     println!("");
     println!("{}", "Commands".yellow().bold());
     println!("{}{}", "'help'".cyan(), ": Displays this help screen.");
