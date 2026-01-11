@@ -560,12 +560,35 @@ fn main() {
     let mut rdr = csv::Reader::from_reader(data.as_bytes());
     let mut airports: Vec<Airport> = vec![];
 
+    //add airports and sort by facility size
+    let mut large: Vec<Airport> = vec![];
+    let mut medium: Vec<Airport> = vec![];
+    let mut small: Vec<Airport> = vec![];
+    let mut seaplane: Vec<Airport> = vec![];
+
     for airport in rdr.deserialize() {
         let unwrappedairport: Airport = airport.unwrap();
-        if unwrappedairport.facility != "heliport"{
-            airports.push(unwrappedairport);
+        if (unwrappedairport.facility != "heliport") && (unwrappedairport.facility != "balloonport"){
+            if unwrappedairport.facility == "large_airport" {
+                large.push(unwrappedairport);
+            }
+            else if unwrappedairport.facility == "medium_airport" {
+                medium.push(unwrappedairport);
+            }
+            else if unwrappedairport.facility == "small_airport" {
+                small.push(unwrappedairport);
+            }
+            else if unwrappedairport.facility == "seaplane_base" {
+                seaplane.push(unwrappedairport);
+            }
         }
     }
+
+    //concatenate vectors
+    airports.append(&mut large);
+    airports.append(&mut medium);
+    airports.append(&mut small);
+    airports.append(&mut seaplane);
 
     //initialize unit
     let mut unit = "mi";
