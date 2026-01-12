@@ -166,7 +166,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 if querycollect.len() > 1{
                     for airport in airports.iter() {
                         //city and state
-                        if (querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase()) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                             if lathold == 0.0 {
                                 lathold = airport.latitude_deg;
                                 lat = airport.latitude_deg;
@@ -195,7 +195,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //city and country
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if (querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase()) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                            if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -316,7 +316,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //try to match city
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase() {
+                            if airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -484,7 +484,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
             if querycollect.len() > 1{
                 for airport in airports.iter() {
                     //city and state
-                    if (querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase()) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                    if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                         airporticao = &airport.icao_code;
                         airportiata = &airport.iata_code;
                         airportlocalid = &airport.local_code;
@@ -503,7 +503,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //city and country
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if (querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase()) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
@@ -584,7 +584,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //try to match city
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase() {
+                        if airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
