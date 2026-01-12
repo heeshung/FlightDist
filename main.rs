@@ -1,8 +1,8 @@
 use serde::{Deserialize};
 use std::fs;
 use geoutils::Location;
-use inquire::Text;
 use colored::Colorize;
+use dialoguer::{Input, BasicHistory};
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -20,7 +20,7 @@ struct Airport {
     local_code: String
 }
 
-fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &Vec<&str>) -> i32 {
+fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &Vec<&str>, unwrappedargs: String) -> i32 {
 
     //initiialize variables
     let mut lat: f64 = 0.0;
@@ -36,9 +36,6 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     let mut totaldist: f64 = 0.0;
 
     let mut queries: Vec<String> = vec![];
-    let interactiveargs = Text::new(">>").prompt();
-
-    let unwrappedargs = interactiveargs.unwrap();
 
     //split for space delimiter
     let splitspaceargs = unwrappedargs.split("-");
@@ -766,8 +763,12 @@ fn main() {
     println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
     println!("For help, type 'help'.");
     println!("");
+
+    let mut history = BasicHistory::new();
+
     loop {
-        let result = queryhandler(&airports, unit, version, &factypes);
+        let unwrappedargs: String = Input::new().with_prompt("").history_with(&mut history).interact_text().unwrap();
+        let result = queryhandler(&airports, unit, version, &factypes, unwrappedargs);
         if result == 2 {
             unit = "mi";
             println!("Units set to {}.", unit);
