@@ -21,7 +21,7 @@ struct Airport {
     local_code: String
 }
 
-fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
+fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &Vec<&str>) -> i32 {
 
     //initiialize variables
     let mut lat: f64 = 0.0;
@@ -50,6 +50,11 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
     //check if help
     if queries[0].to_ascii_lowercase() == "help" {
         helpdisp();
+    }
+
+    //check if about
+    else if queries[0].to_ascii_lowercase() == "about" {
+        aboutdisp(airports.len(), version, factypes);
     }
 
     else if queries[0].to_ascii_lowercase() == "exit" {
@@ -82,8 +87,8 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
         }
 
         println!("");
-        println!("{}{}{}","IATA/ICAO - Airport Name".blue().bold(), "                                                          Distance        ".blue().bold(), "Total".blue().bold());
-        println!("-------------------------------------------------------------------------------------------------------");
+        println!("{}{}{}","IATA/ICAO - Airport Name".blue().bold(), "                                                                         Distance        ".blue().bold(), "Total".blue().bold());
+        println!("----------------------------------------------------------------------------------------------------------------------");
 
         for query in queries.iter() {
             airportfound = false;
@@ -157,7 +162,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
                 //try to match city and country or city and state first
                 if querycollect.len() > 1{
                     for airport in airports.iter() {
-                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.iso_country.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
+                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                             if lathold == 0.0 {
                                 lathold = airport.latitude_deg;
                                 lat = airport.latitude_deg;
@@ -183,7 +188,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
                     }
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.iso_region.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
+                            if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -213,7 +218,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
                 else {
                     //try to match local id
                     for airport in airports.iter() {
-                        if airport.local_code.to_ascii_lowercase() == querycollect[0].to_ascii_lowercase() {
+                        if querycollect[0].to_ascii_lowercase() == airport.local_code.to_ascii_lowercase() {
                             if lathold == 0.0 {
                                 lathold = airport.latitude_deg;
                                 lat = airport.latitude_deg;
@@ -298,13 +303,19 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
             if airportfound == true {
                 let distance = distancecalc(lathold,lonhold,lat,lon,unit);
                 totaldist += distance;
+                let mut airportnametrail = "";
+                //truncate airport name if too long
+                if airportname.chars().count()>89 {
+                    airportname = &airportname[..80];
+                    airportnametrail = "...";
+                }
                 let paddingiata = 3-airportiata.chars().count();
                 let paddingicao = 4-airporticao.chars().count();
-                let paddingname = 75-airportname.chars().count();
-                println!("{:>paddingiata$}/{:>paddingicao$} - {} {:>paddingname$.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, distance, unit, totaldist, unit);
+                let paddingname = 90-airportname.chars().count()-airportnametrail.chars().count();
+                println!("{:>paddingiata$}/{:>paddingicao$} - {}{} {:>paddingname$.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, airportnametrail, distance, unit, totaldist, unit);
             }
             else {
-                println!("'{}' can not be found.", query);
+                println!("'{}' could not be found.", query);
             }
         }
         println!("");
@@ -312,7 +323,7 @@ fn queryhandler(airports: &Vec<Airport>, unit: &str) -> i32 {
     return 0;
 }
 
-fn airportsearch(query: &String, airports: &Vec<Airport>) {
+fn airportsearch(query: &String, airports: &Vec<&Airport>) {
     //initiialize variables
     let mut airporticao = ""; 
     let mut airportiata = "";
@@ -381,7 +392,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
             //try to match city and country or city and state first
             if querycollect.len() > 1{
                 for airport in airports.iter() {
-                    if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.iso_country.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
+                    if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                         airporticao = &airport.icao_code;
                         airportiata = &airport.iata_code;
                         airportlocalid = &airport.local_code;
@@ -399,7 +410,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
                 }
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (airport.iso_region.to_ascii_lowercase() == querycollect[1].to_ascii_lowercase()) {
+                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
@@ -421,7 +432,7 @@ fn airportsearch(query: &String, airports: &Vec<Airport>) {
             else {
                 //try to match local id
                 for airport in airports.iter() {
-                    if airport.local_code.to_ascii_lowercase() == querycollect[0].to_ascii_lowercase() {
+                    if querycollect[0].to_ascii_lowercase() == airport.local_code.to_ascii_lowercase() {
                         airporticao = &airport.icao_code;
                         airportiata = &airport.iata_code;
                         airportlocalid = &airport.local_code;
@@ -549,56 +560,56 @@ fn helpdisp() {
     println!("{}", "Commands".yellow().bold());
     println!("{}{}", "'help'".cyan(), ": Displays this help screen.");
     println!("{}/{}/{}{}", "'unit=mi'".cyan(), "'unit=km'".cyan(), "'unit=nm'".cyan(), ": Set units for miles, kilometers, or nautical miles.");
+    println!("{}{}", "'about'".cyan(), ": Displays about screen.");
     println!("{}{}", "'exit'".cyan(), ": Exits FlightDist.");
     println!("");
 }
 
+fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>){
+    println!("");
+    println!("FlightDist v{}", version);
+    println!("Included facility types: {:?}", factypes);
+    println!("{} facilities loaded.", airports_len);
+    println!("");
+}
+
 fn main() {
+    //set version
+    let version = env!("CARGO_PKG_VERSION");
+
     //read files and parse csv
     let file = "airports/airports.csv";
     let data = fs::read_to_string(file).expect("File Read Error");
 
     let mut rdr = csv::Reader::from_reader(data.as_bytes());
-    let mut airports: Vec<Airport> = vec![];
+    let mut unsortedairports: Vec<Airport> = vec![];
+    let mut airports: Vec<&Airport> = vec![];
 
-    //add airports and sort by facility size
-    let mut large: Vec<Airport> = vec![];
-    let mut medium: Vec<Airport> = vec![];
-    let mut small: Vec<Airport> = vec![];
-    let mut seaplane: Vec<Airport> = vec![];
+    let factypes: Vec<&str> = vec!["large_airport", "medium_airport", "small_airport", "seaplane_base", "heliport", "balloonport"];
 
+    //load airports
     for airport in rdr.deserialize() {
         let unwrappedairport: Airport = airport.unwrap();
-        if (unwrappedairport.facility != "heliport") && (unwrappedairport.facility != "balloonport"){
-            if unwrappedairport.facility == "large_airport" {
-                large.push(unwrappedairport);
-            }
-            else if unwrappedairport.facility == "medium_airport" {
-                medium.push(unwrappedairport);
-            }
-            else if unwrappedairport.facility == "small_airport" {
-                small.push(unwrappedairport);
-            }
-            else if unwrappedairport.facility == "seaplane_base" {
-                seaplane.push(unwrappedairport);
+        unsortedairports.push(unwrappedairport);
+    }
+
+    //sort airports
+    for factype in &factypes {
+        for airport in &unsortedairports {
+            if airport.facility == factype.to_string() {
+                airports.push(airport);
             }
         }
     }
 
-    //concatenate vectors
-    airports.append(&mut large);
-    airports.append(&mut medium);
-    airports.append(&mut small);
-    airports.append(&mut seaplane);
-
     //initialize unit
     let mut unit = "mi";
 
-    println!("{}", "FlightDist v1.3.4".yellow().bold());
+    println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
     println!("For help, type 'help'.");
     println!("");
     loop {
-        let result = queryhandler(&airports, unit);
+        let result = queryhandler(&airports, unit, version, &factypes);
         if result == 2 {
             unit = "mi";
             println!("Units set to {}.", unit);
