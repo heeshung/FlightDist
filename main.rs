@@ -6,7 +6,6 @@ use colored::Colorize;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
-    //ident: String,
     facility: String,
     name: String,
     latitude_deg: f64,
@@ -31,6 +30,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     let mut airporticao = "";
     let mut airportiata = "";
     let mut airportname = "";
+    let mut airportstate = "";
     let mut airportcountry = "";
     let mut airportfound: bool;
     let mut totaldist: f64 = 0.0;
@@ -120,6 +120,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                             lon = airport.longitude_deg;
                         }
                         airportname = &airport.name;
+                        airportstate = &airport.iso_region;
                         airportcountry = &airport.iso_country;
                         airportiata = &airport.iata_code;
                         airporticao = &airport.icao_code;
@@ -150,6 +151,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                             lon = airport.longitude_deg;
                         }
                         airportname = &airport.name;
+                        airportstate = &airport.iso_region;
                         airportcountry = &airport.iso_country;
                         airportiata = &airport.iata_code;
                         airporticao = &airport.icao_code;
@@ -184,6 +186,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                                 lon = airport.longitude_deg;
                             }
                             airportname = &airport.name;
+                            airportstate = &airport.iso_region;
                             airportcountry = &airport.iso_country;
                             airportiata = &airport.iata_code;
                             airporticao = &airport.icao_code;
@@ -212,6 +215,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                                     lon = airport.longitude_deg;
                                 }
                                 airportname = &airport.name;
+                                airportstate = &airport.iso_region;
                                 airportcountry = &airport.iso_country;
                                 airportiata = &airport.iata_code;
                                 airporticao = &airport.icao_code;
@@ -241,6 +245,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                                     lon = airport.longitude_deg;
                                 }
                                 airportname = &airport.name;
+                                airportstate = &airport.iso_region;
                                 airportcountry = &airport.iso_country;
                                 airportiata = &airport.iata_code;
                                 airporticao = &airport.icao_code;
@@ -270,6 +275,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                                     lon = airport.longitude_deg;
                                 }
                                 airportname = &airport.name;
+                                airportstate = &airport.iso_region;
                                 airportcountry = &airport.iso_country;
                                 airportiata = &airport.iata_code;
                                 airporticao = &airport.icao_code;
@@ -301,6 +307,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                                 lon = airport.longitude_deg;
                             }
                             airportname = &airport.name;
+                            airportstate = &airport.iso_region;
                             airportcountry = &airport.iso_country;
                             airportiata = &airport.iata_code;
                             airporticao = &airport.icao_code;
@@ -329,6 +336,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                                     lon = airport.longitude_deg;
                                 }
                                 airportname = &airport.name;
+                                airportstate = &airport.iso_region;
                                 airportcountry = &airport.iso_country;
                                 airportiata = &airport.iata_code;
                                 airporticao = &airport.icao_code;
@@ -358,6 +366,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                                     lon = airport.longitude_deg;
                                 }
                                 airportname = &airport.name;
+                                airportstate = &airport.iso_region;
                                 airportcountry = &airport.iso_country;
                                 airportiata = &airport.iata_code;
                                 airporticao = &airport.icao_code;
@@ -373,21 +382,27 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 totaldist += distance;
                 let mut airportnametrail = "";
                 //truncate airport name if too long
-                if airportname.chars().count()>77 {
-                    airportname = &airportname[..74];
+                if airportname.chars().count()>74 {
+                    airportname = &airportname[..71];
                     airportnametrail = "...";
+                }
+                let mut state = "";
+                let mut statesuffix = "";
+                if airportcountry == "US" {
+                    state = airportstate;
+                    statesuffix = "-";
                 }
                 let paddingiata = 3-airportiata.chars().count();
                 let paddingicao = 4-airporticao.chars().count();
-                let paddingname = 85-airportname.chars().count()-airportnametrail.chars().count();
-                println!("{:>paddingiata$}/{:>paddingicao$} - {}{} [{}] {:>paddingname$.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, airportnametrail, airportcountry.purple(), distance, unit, totaldist, unit);
+                let paddingname = 77-airportname.chars().count()-state.chars().count()-statesuffix.chars().count();
+                println!("{:>paddingiata$}/{:>paddingicao$} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, airportnametrail, state.purple(), statesuffix.purple(), airportcountry.purple(), distance, unit, totaldist, unit);
             }
             else {
                 //truncate query if too long
                 let mut querytrail = "";
                 let queryname;
-                if query.chars().count()>71 {
-                    queryname = &query[..68];
+                if query.chars().count()>70 {
+                    queryname = &query[..67];
                     querytrail = "...";
                 }
                 else{
@@ -698,7 +713,7 @@ fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>){
 }
 
 fn main() {
-    
+
     //set version
     let version = env!("CARGO_PKG_VERSION");
 
