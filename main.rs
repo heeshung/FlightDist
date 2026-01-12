@@ -768,7 +768,7 @@ fn main() {
     println!("");
 
     loop {
-        let unwrappedargs: String = Input::new().with_prompt("").history_with(&mut history).interact_text().unwrap();
+        let unwrappedargs: String = Input::new().with_prompt(":").history_with(&mut history).interact_text().unwrap();
         let result = queryhandler(&airports, unit, version, &factypes, unwrappedargs);
         if result == 2 {
             unit = "mi";
