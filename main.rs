@@ -36,6 +36,8 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     let mut airportfound: bool;
     let mut totaldist: f64 = 0.0;
 
+    let mut counter: i32 = -1;
+
     let mut queries: Vec<String> = vec![];
 
     //split for space delimiter
@@ -377,6 +379,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 }
             }
             if airportfound == true {
+                counter += 1;
                 let distance = distancecalc(lathold,lonhold,lat,lon,unit);
                 totaldist += distance;
                 let mut airportnametrail = "";
@@ -409,6 +412,19 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 }
                 println!("'{}{}' could not be found.", queryname.cyan(), querytrail.cyan());
             }
+        }
+        println!("----------------------------------------------------------------------------------------------------------------------");
+        let mut countersuffix: String = "flight".to_string();
+        if counter != 1 {
+            countersuffix = "flights".to_string();
+        }
+        let paddingcounter = 114-countersuffix.chars().count()-counter.to_string().chars().count();
+        let totalformat = format!("{:.1}", totaldist);
+        if counter > 0 {
+            println!("{} {}{:>paddingcounter$} {}", counter.to_string().cyan().bold(), countersuffix.bold(), totalformat.to_string().cyan().bold(), unit.bold());
+        }
+        else {
+            println!("{} {}{:>106} {}", "0".cyan().bold(), "flights".bold(), "0".cyan().bold(), unit.bold());
         }
         println!("");
     }
