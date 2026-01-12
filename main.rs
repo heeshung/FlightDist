@@ -760,11 +760,12 @@ fn main() {
     //initialize unit
     let mut unit = "mi";
 
+    //initialize prompt history
+    let mut history = BasicHistory::new();
+
     println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
     println!("For help, type 'help'.");
     println!("");
-
-    let mut history = BasicHistory::new();
 
     loop {
         let unwrappedargs: String = Input::new().with_prompt("").history_with(&mut history).interact_text().unwrap();
