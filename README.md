@@ -39,6 +39,8 @@ SEA/KSEA - Seattle–Tacoma International Airport                               
 ORD/KORD - Chicago O'Hare International Airport                                       [IL-US]   1720.6 mi,   6524.1 mi
 CPT/FACT - Cape Town International Airport                                               [ZA]   8513.0 mi,  15037.1 mi
 FLL/KFLL - Fort Lauderdale Hollywood International Airport                            [FL-US]   7668.9 mi,  22706.0 mi
+----------------------------------------------------------------------------------------------------------------------
+4 flights                                                                                                   22706.0 mi
 ```
 
 ## Search Example
