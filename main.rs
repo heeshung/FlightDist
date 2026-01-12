@@ -406,7 +406,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 else{
                     queryname = &query;
                 }
-                println!("'{}{}' could not be found.", queryname, querytrail);
+                println!("'{}{}' could not be found.", queryname.cyan(), querytrail.cyan());
             }
         }
         println!("");
@@ -647,7 +647,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
             }
         }
         else {
-            println!("'{}' could not be found.", query);
+            println!("'{}' could not be found.", query.cyan());
         }
     }
     println!("");
@@ -676,29 +676,29 @@ fn helpdisp() {
     println!("Enter single term to use search function.");
     println!("");
     println!("{}", "Flight Distance Function".yellow().bold());
-    println!("Enter terms separated by hyphens ({}).", "'-'".cyan());
-    println!("{}{}", "Example: ", "'HND-KSEA-o'hare-Cape Town, ZA-Fort Lauderdale, FL'".cyan());
+    println!("Enter terms separated by hyphens ('{}').", "-".cyan());
+    println!("{}'{}'", "Example: ", "HND-KSEA-o'hare-Cape Town, ZA-Fort Lauderdale, FL".cyan());
     println!("");
     println!("{}", "Term Formatting".yellow().bold());
     println!("Acceptable term formats in order of accuracy (highest to lowest):");
-    println!("{}{}", "-ICAO Code: ", "'KABE'".cyan());
-    println!("{}{}", "-IATA Code: ", "'ABE'".cyan());
-    println!("{}{}", "-FAA LID: ", "'ABE'".cyan());
-    println!("{}{}", "-Airport Name: ", "'Lehigh Valley International'".cyan());
-    println!("{}{}", "-Airport Name, State Code: ", "'Lehigh Valley International, PA'".cyan());
-    println!("{}{}", "-Airport Name, Country Code: ", "'Lehigh Valley International, US'".cyan());
-    println!("{}{}", "-City, State Code: ", "'Allentown, PA'".cyan());
-    println!("{}{}", "-City, Country Code: ", "'Allentown, US'".cyan());
-    println!("{}{}", "-City Only: ", "'Allentown'".cyan());
+    println!("{}'{}'", "-ICAO Code: ", "KABE".cyan());
+    println!("{}'{}'", "-IATA Code: ", "ABE".cyan());
+    println!("{}'{}'", "-FAA LID: ", "ABE".cyan());
+    println!("{}'{}'", "-Airport Name: ", "Lehigh Valley International".cyan());
+    println!("{}'{}'", "-Airport Name, State Code: ", "Lehigh Valley International, PA".cyan());
+    println!("{}'{}'", "-Airport Name, Country Code: ", "Lehigh Valley International, US".cyan());
+    println!("{}'{}'", "-City, State Code: ", "Allentown, PA".cyan());
+    println!("{}'{}'", "-City, Country Code: ", "Allentown, US".cyan());
+    println!("{}'{}'", "-City Only: ", "Allentown".cyan());
     println!("");
     println!("{}", "Navigation".yellow().bold());
     println!("Use up/down arrow to recall and navigate through past searches or queries.");
     println!("");
     println!("{}", "Commands".yellow().bold());
-    println!("{}{}", "'help'".cyan(), ": Displays this help screen.");
-    println!("{}/{}/{}{}", "'unit=mi'".cyan(), "'unit=km'".cyan(), "'unit=nm'".cyan(), ": Set units for miles, kilometers, or nautical miles.");
-    println!("{}{}", "'about'".cyan(), ": Displays about screen.");
-    println!("{}{}", "'exit'".cyan(), ": Exits FlightDist.");
+    println!("'{}'{}", "help".cyan(), ": Displays this help screen.");
+    println!("'{}'/'{}'/'{}'{}", "unit=mi".cyan(), "unit=km".cyan(), "unit=nm".cyan(), ": Set units for miles, kilometers, or nautical miles.");
+    println!("'{}'{}", "about".cyan(), ": Displays about screen.");
+    println!("'{}'{}", "exit".cyan(), ": Exits FlightDist.");
     println!("");
 }
 
@@ -761,7 +761,7 @@ fn main() {
     let mut history = BasicHistory::new();
 
     println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
-    println!("For help, type 'help'.");
+    println!("For help, type '{}'.", "help".cyan());
     println!("");
 
     loop {
@@ -769,17 +769,17 @@ fn main() {
         let result = queryhandler(&airports, unit, version, &factypes, unwrappedargs);
         if result == 2 {
             unit = "mi";
-            println!("Units set to {}.", unit);
+            println!("Units set to {}.", unit.cyan());
             println!("");
         }
         else if result == 3 {
             unit = "nm";
-            println!("Units set to {}.", unit);
+            println!("Units set to {}.", unit.cyan());
             println!("");
         }
         else if result == 4 {
             unit = "km";
-            println!("Units set to {}.", unit);
+            println!("Units set to {}.", unit.cyan());
             println!("");
         }
         else if result == 1 {
