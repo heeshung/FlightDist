@@ -10,7 +10,6 @@ geoutils = "0.5.1"
 inquire = "0.9.1"
 colored = "3.0.0"
 csv = "1.4.0"
-dialoguer = "0.12.0"
 
 [[bin]]
 name = "FlightDist"
