@@ -82,6 +82,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 }
                 else {
                     println!("Unrecognized unit.");
+                    println!("");
                 }
                 return 0;
             }
@@ -432,7 +433,6 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
 
     //check if empty term
     if query.trim().len() == 0 {
-        println!("");
         println!("Empty term.");
     }
 
@@ -704,7 +704,6 @@ fn helpdisp() {
 }
 
 fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>){
-    println!("");
     println!("FlightDist v{}", version);
     println!("");
     println!("Included facility types: {:?}", factypes);
@@ -767,14 +766,17 @@ fn main() {
         if result == 2 {
             unit = "mi";
             println!("Units set to {}.", unit);
+            println!("");
         }
         else if result == 3 {
             unit = "nm";
             println!("Units set to {}.", unit);
+            println!("");
         }
         else if result == 4 {
             unit = "km";
             println!("Units set to {}.", unit);
+            println!("");
         }
         else if result == 1 {
             break;
