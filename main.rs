@@ -3,6 +3,7 @@ use std::fs;
 use geoutils::Location;
 use colored::Colorize;
 use dialoguer::{Input, BasicHistory};
+use unidecode::unidecode;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -166,7 +167,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 if querycollect.len() > 1{
                     for airport in airports.iter() {
                         //city and state
-                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                        if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                             if lathold == 0.0 {
                                 lathold = airport.latitude_deg;
                                 lat = airport.latitude_deg;
@@ -195,7 +196,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //city and country
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                            if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -225,7 +226,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //airport name and state
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if (airport.name.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                            if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -255,7 +256,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //airport name and country
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if (airport.name.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                            if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -316,7 +317,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //try to match city
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
+                            if unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -346,7 +347,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //search in airport name
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if airport.name.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
+                            if unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
                                 if lathold == 0.0 {
                                     lathold = airport.latitude_deg;
                                     lat = airport.latitude_deg;
@@ -484,7 +485,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
             if querycollect.len() > 1{
                 for airport in airports.iter() {
                     //city and state
-                    if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                    if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                         airporticao = &airport.icao_code;
                         airportiata = &airport.iata_code;
                         airportlocalid = &airport.local_code;
@@ -503,7 +504,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //city and country
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if (airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                        if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
@@ -523,7 +524,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //airport name and state
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if (airport.name.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                        if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
@@ -543,7 +544,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //airport name and country
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if (airport.name.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                        if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
@@ -584,7 +585,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //try to match city
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if airport.municipality.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
+                        if unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
@@ -604,7 +605,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //search in airport name
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if airport.name.to_ascii_lowercase().contains(&querycollect[0].to_ascii_lowercase()) {
+                        if unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
                             airporticao = &airport.icao_code;
                             airportiata = &airport.iata_code;
                             airportlocalid = &airport.local_code;
