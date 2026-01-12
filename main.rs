@@ -675,7 +675,6 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 }
 
 fn helpdisp() {
-    println!("");
     println!("{}", "Search Function".yellow().bold());
     println!("Enter single term to use search function.");
     println!("");
@@ -704,10 +703,10 @@ fn helpdisp() {
 }
 
 fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>){
-    println!("FlightDist v{}", version);
+    println!("{}{}", "FlightDist v".yellow(), version.yellow());
     println!("");
     println!("Included facility types: {:?}", factypes);
-    println!("{} facilities loaded.", airports_len);
+    println!("{} facilities loaded.", airports_len.to_string().green());
     println!("");
 }
 
