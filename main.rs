@@ -683,7 +683,7 @@ fn helpdisp() {
     println!("");
     println!("{}", "Flight Distance Function".yellow().bold());
     println!("Enter terms separated by hyphens ({}).", "'-'".cyan());
-    println!("{}{}", "Example: ", "'hnd-ksea-o'hare-cape town, za-Fort Lauderdale, FL'".cyan());
+    println!("{}{}", "Example: ", "'HND-KSEA-o'hare-Cape Town, ZA-Fort Lauderdale, FL'".cyan());
     println!("");
     println!("{}", "Term Formatting".yellow().bold());
     println!("Acceptable term formats in order of accuracy (highest to lowest):");
