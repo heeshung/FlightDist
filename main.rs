@@ -697,6 +697,9 @@ fn helpdisp() {
     println!("{}{}", "-City, Country Code: ", "'Allentown, US'".cyan());
     println!("{}{}", "-City Only: ", "'Allentown'".cyan());
     println!("");
+    println!("{}", "Navigation".yellow().bold());
+    println!("Use up/down arrow to recall and navigate through past searches or queries.");
+    println!("");
     println!("{}", "Commands".yellow().bold());
     println!("{}{}", "'help'".cyan(), ": Displays this help screen.");
     println!("{}/{}/{}{}", "'unit=mi'".cyan(), "'unit=km'".cyan(), "'unit=nm'".cyan(), ": Set units for miles, kilometers, or nautical miles.");

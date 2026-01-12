@@ -20,6 +20,9 @@ Acceptable term formats in order of accuracy (highest to lowest):
 - City, Country Code: ```Allentown, US```
 - City Only: ```Allentown```
 
+### Navigation
+Use up/down arrow to recall and navigate through past searches or queries.
+
 ### Commands
 - ```help```: Displays help screen.
 - ```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
