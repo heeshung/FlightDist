@@ -25,7 +25,7 @@ Acceptable term formats in order of accuracy (highest to lowest):
 - ```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
 - ```exit```: Exits FlightDist.
 
-## Example
+## Flight Distance Example
 ```
 :: HND-KSEA-o'hare-Cape Town, ZA-Fort Lauderdale, FL
 
@@ -36,4 +36,22 @@ SEA/KSEA - Seattle–Tacoma International Airport                               
 ORD/KORD - Chicago O'Hare International Airport                                       [IL-US]   1720.6 mi,   6524.1 mi
 CPT/FACT - Cape Town International Airport                                               [ZA]   8513.0 mi,  15037.1 mi
 FLL/KFLL - Fort Lauderdale Hollywood International Airport                            [FL-US]   7668.9 mi,  22706.0 mi
+```
+
+## Search Example
+```
+:: ams
+
+Airport Information
+-------------------
+Airport Name: Amsterdam Airport Schiphol
+IATA Code: AMS
+ICAO Code: EHAM
+Local ID/FAA LID:
+City: Amsterdam
+State: NL-NH
+Country: NL
+Latitude: 52.308601
+Longitude: 4.76389
+Elevation: -11 ft
 ```
