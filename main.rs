@@ -198,30 +198,33 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     //city and state
                     if airportfound == false {
                         for airport in airports.iter() {
-                            if (querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase()) && (querycollect[1].to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
-                                if lathold == 0.0 {
-                                    lathold = airport.latitude_deg;
-                                    lat = airport.latitude_deg;
+                            if querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase() {
+                                //match either intl iso_region or state
+                                if (querycollect[1].to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) || (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                                    if lathold == 0.0 {
+                                        lathold = airport.latitude_deg;
+                                        lat = airport.latitude_deg;
+                                    }
+                                    else {
+                                        lathold = lat;
+                                        lat = airport.latitude_deg;
+                                    }
+                                    if lonhold == 0.0 {
+                                        lonhold = airport.longitude_deg;
+                                        lon = airport.longitude_deg;
+                                    }
+                                    else {
+                                        lonhold = lon;
+                                        lon = airport.longitude_deg;
+                                    }
+                                    airportname = &airport.name;
+                                    airportstate = &airport.iso_region;
+                                    airportcountry = &airport.iso_country;
+                                    airportiata = &airport.iata_code;
+                                    airporticao = &airport.icao_code;
+                                    airportfound = true;
+                                    break;
                                 }
-                                else {
-                                    lathold = lat;
-                                    lat = airport.latitude_deg;
-                                }
-                                if lonhold == 0.0 {
-                                    lonhold = airport.longitude_deg;
-                                    lon = airport.longitude_deg;
-                                }
-                                else {
-                                    lonhold = lon;
-                                    lon = airport.longitude_deg;
-                                }
-                                airportname = &airport.name;
-                                airportstate = &airport.iso_region;
-                                airportcountry = &airport.iso_country;
-                                airportiata = &airport.iata_code;
-                                airporticao = &airport.icao_code;
-                                airportfound = true;
-                                break;
                             }
                         }
                     }
@@ -390,7 +393,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 let mut state = "";
                 let mut statesuffix = "";
                 if airportcountry == "US" {
-                    state = airportstate;
+                    state = &airportstate[3..];
                     statesuffix = "-";
                 }
                 let paddingiata = 3-airportiata.chars().count();
@@ -506,20 +509,23 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
                 //city and state
                 if airportfound == false {
                     for airport in airports.iter() {
-                        if (querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase()) && (querycollect[1].to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
-                            airporticao = &airport.icao_code;
-                            airportiata = &airport.iata_code;
-                            airportlocalid = &airport.local_code;
-                            airportname = &airport.name;
-                            airportcity = &airport.municipality;
-                            airportstate = &airport.iso_region;
-                            airportcountry = &airport.iso_country;
-                            elevation = airport.elevation_ft;
-                            lat = airport.latitude_deg;
-                            lon = airport.longitude_deg;
+                        if querycollect[0].to_ascii_lowercase() == airport.municipality.to_ascii_lowercase() {
+                            //match either intl iso_region or state
+                            if (querycollect[1].to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) || (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                                airporticao = &airport.icao_code;
+                                airportiata = &airport.iata_code;
+                                airportlocalid = &airport.local_code;
+                                airportname = &airport.name;
+                                airportcity = &airport.municipality;
+                                airportstate = &airport.iso_region;
+                                airportcountry = &airport.iso_country;
+                                elevation = airport.elevation_ft;
+                                lat = airport.latitude_deg;
+                                lon = airport.longitude_deg;
 
-                            airportfound = true;
-                            break;
+                                airportfound = true;
+                                break;
+                            }
                         }
                     }
                 }
