@@ -1,5 +1,7 @@
 use serde::{Deserialize};
 use std::fs;
+use std::thread;
+use std::time::Duration;
 use geoutils::Location;
 use inquire::Text;
 use colored::Colorize;
@@ -725,43 +727,45 @@ fn main() {
     let file = "airports/airports.csv";
     let data = fs::read_to_string(file).expect("File Read Error");
 
-    let mut rdr = csv::Reader::from_reader(data.as_bytes());
-    let mut unsortedairports: Vec<Airport> = vec![];
-    let mut halfsorted: Vec<&Airport> = vec![];
-    let mut airports: Vec<&Airport> = vec![];
+    let handle = thread::spawn(|| {
+        let mut rdr = csv::Reader::from_reader(data.as_bytes());
+        let mut unsortedairports: Vec<Airport> = vec![];
+        let mut halfsorted: Vec<&Airport> = vec![];
+        let mut airports: Vec<&Airport> = vec![];
 
-    let factypes: Vec<&str> = vec!["large_airport", "medium_airport", "small_airport", "seaplane_base", "heliport", "balloonport"];
+        let factypes: Vec<&str> = vec!["large_airport", "medium_airport", "small_airport", "seaplane_base", "heliport", "balloonport"];
 
-    //load airports
-    for airport in rdr.deserialize() {
-        let unwrappedairport: Airport = airport.unwrap();
-        unsortedairports.push(unwrappedairport);
-    }
+        //load airports
+        for airport in rdr.deserialize() {
+            let unwrappedairport: Airport = airport.unwrap();
+            unsortedairports.push(unwrappedairport);
+        }
 
-    //sort airports by facility size
-    for factype in &factypes {
-        for airport in &unsortedairports {
-            if airport.facility == factype.to_string() {
-                halfsorted.push(airport);
+        //sort airports by facility size
+        for factype in &factypes {
+            for airport in &unsortedairports {
+                if airport.facility == factype.to_string() {
+                    halfsorted.push(airport);
+                }
             }
         }
-    }
 
-    //sort airports by if icao code exists
-    for airport in &halfsorted {
-        if airport.icao_code != "" {
-            airports.push(airport);
+        //sort airports by if icao code exists
+        for airport in &halfsorted {
+            if airport.icao_code != "" {
+                airports.push(airport);
+            }
         }
-    }
 
-    for airport in &halfsorted {
-        if airport.icao_code == "" {
-            airports.push(airport);
+        for airport in &halfsorted {
+            if airport.icao_code == "" {
+                airports.push(airport);
+            }
         }
-    }
 
-    //initialize unit
-    let mut unit = "mi";
+        //initialize unit
+        let mut unit = "mi";
+    });
 
     println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
     println!("For help, type 'help'.");
