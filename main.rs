@@ -21,7 +21,7 @@ struct Airport {
     local_code: String
 }
 
-fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &Vec<&str>, unwrappedargs: String) -> i32 {
+fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &Vec<&str>, unwrappedargs: String, argcounter: i32, argslen: usize) -> (i32, i32, f64) {
 
     //initiialize variables
     let mut lat: f64 = 0.0;
@@ -36,7 +36,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     let mut airportfound: bool;
     let mut totaldist: f64 = 0.0;
 
-    let mut counter: i32 = -1;
+    let mut counter: i32 = 0;
 
     let mut queries: Vec<String> = vec![];
 
@@ -48,388 +48,407 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
         queries.push(args.to_string());
     }
 
-    //check if help
-    if queries[0].to_ascii_lowercase() == "help" {
-        helpdisp();
-    }
-
-    //check if about
-    else if queries[0].to_ascii_lowercase() == "about" {
-        aboutdisp(airports.len(), version, factypes);
-    }
-
-    else if queries[0].to_ascii_lowercase() == "exit" {
-        return 1; 
-    }
-
-    //check for single flag (search function)
-    else if (queries.len() == 1) && (queries[0].contains("unit=") == false) {
-        airportsearch(&queries[0], airports);
-    }
-
-    else {
-        //check for flags
-        for query in queries.iter() {
-            if query.to_ascii_lowercase().contains("unit=") {
-                if query == ("unit=mi") {
-                    return 2;
-                }
-                else if query == ("unit=nm") {
-                    return 3;
-                }
-                else if query == ("unit=km") {
-                    return 4;
-                }
-                else {
-                    println!("Unrecognized unit.");
-                    println!("");
-                }
-                return 0;
-            }
+    //only run if first iteration
+    if argcounter == 0 {
+        //check if help
+        if queries[0].to_ascii_lowercase() == "help" {
+            helpdisp();
+            return (5, counter, totaldist);
         }
 
-        println!("");
-        println!("{}{}{}","IATA/ICAO - Airport Name".blue().bold(), "                                                                         Distance        ".blue().bold(), "Total".blue().bold());
-        println!("----------------------------------------------------------------------------------------------------------------------");
+        //check if about
+        else if queries[0].to_ascii_lowercase() == "about" {
+            aboutdisp(airports.len(), version, factypes);
+            return (5, counter, totaldist);
+        }
 
-        for query in queries.iter() {
-            airportfound = false;
-            //check if empty term
-            if query.trim().len() == 0 {
-                println!("Empty term.");
-                continue;
+        else if queries[0].to_ascii_lowercase() == "exit" {
+            return (1, counter, totaldist); 
+        }
+
+        else if queries[0].to_ascii_lowercase().contains("unit=") {
+            if queries[0] == ("unit=mi") {
+                return (2, counter, totaldist);
             }
-            //search icaos
-            if query.chars().count() == 4 {
-                for airport in airports.iter() {
-                    //check for icao identifiers
-                    if query.to_ascii_lowercase() == airport.icao_code.to_ascii_lowercase() {
-                        if lathold == 0.0 {
-                            lathold = airport.latitude_deg;
-                            lat = airport.latitude_deg;
-                        }
-                        else {
-                            lathold = lat;
-                            lat = airport.latitude_deg;
-                        }
-                        if lonhold == 0.0 {
-                            lonhold = airport.longitude_deg;
-                            lon = airport.longitude_deg;
-                        }
-                        else {
-                            lonhold = lon;
-                            lon = airport.longitude_deg;
-                        }
-                        airportname = &airport.name;
-                        airportstate = &airport.iso_region;
-                        airportcountry = &airport.iso_country;
-                        airportiata = &airport.iata_code;
-                        airporticao = &airport.icao_code;
-                        airportfound = true;
-                        break;
-                    }
-                }
+            else if queries[0] == ("unit=nm") {
+                return (3, counter, totaldist);
             }
-            //search iatas
-            else if query.chars().count() == 3 {
-                for airport in airports.iter() {
-                    //check for iata identifiers
-                    if query.to_ascii_lowercase() == airport.iata_code.to_ascii_lowercase() {
-                        if lathold == 0.0 {
-                            lathold = airport.latitude_deg;
-                            lat = airport.latitude_deg;
-                        }
-                        else {
-                            lathold = lat;
-                            lat = airport.latitude_deg;
-                        }
-                        if lonhold == 0.0 {
-                            lonhold = airport.longitude_deg;
-                            lon = airport.longitude_deg;
-                        }
-                        else {
-                            lonhold = lon;
-                            lon = airport.longitude_deg;
-                        }
-                        airportname = &airport.name;
-                        airportstate = &airport.iso_region;
-                        airportcountry = &airport.iso_country;
-                        airportiata = &airport.iata_code;
-                        airporticao = &airport.icao_code;
-                        airportfound = true;
-                        break;
-                    }
-                }
-            }
-            //search in cities
-            //city uses contains because some cities in csv contain extraneous terms
-            if airportfound == false {
-                let querysplit = query.split(", ");
-                let querycollect = querysplit.collect::<Vec<&str>>();
-                //try to match city and country or city and state first
-                if querycollect.len() > 1{
-                    for airport in airports.iter() {
-                        //city and state
-                        if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
-                            if lathold == 0.0 {
-                                lathold = airport.latitude_deg;
-                                lat = airport.latitude_deg;
-                            }
-                            else {
-                                lathold = lat;
-                                lat = airport.latitude_deg;
-                            }
-                            if lonhold == 0.0 {
-                                lonhold = airport.longitude_deg;
-                                lon = airport.longitude_deg;
-                            }
-                            else {
-                                lonhold = lon;
-                                lon = airport.longitude_deg;
-                            }
-                            airportname = &airport.name;
-                            airportstate = &airport.iso_region;
-                            airportcountry = &airport.iso_country;
-                            airportiata = &airport.iata_code;
-                            airporticao = &airport.icao_code;
-                            airportfound = true;
-                            break;
-                        }
-                    }
-                    //city and country
-                    if airportfound == false {
-                        for airport in airports.iter() {
-                            if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
-                                if lathold == 0.0 {
-                                    lathold = airport.latitude_deg;
-                                    lat = airport.latitude_deg;
-                                }
-                                else {
-                                    lathold = lat;
-                                    lat = airport.latitude_deg;
-                                }
-                                if lonhold == 0.0 {
-                                    lonhold = airport.longitude_deg;
-                                    lon = airport.longitude_deg;
-                                }
-                                else {
-                                    lonhold = lon;
-                                    lon = airport.longitude_deg;
-                                }
-                                airportname = &airport.name;
-                                airportstate = &airport.iso_region;
-                                airportcountry = &airport.iso_country;
-                                airportiata = &airport.iata_code;
-                                airporticao = &airport.icao_code;
-                                airportfound = true;
-                                break;
-                            }
-                        }
-                    }
-                    //airport name and state
-                    if airportfound == false {
-                        for airport in airports.iter() {
-                            if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
-                                if lathold == 0.0 {
-                                    lathold = airport.latitude_deg;
-                                    lat = airport.latitude_deg;
-                                }
-                                else {
-                                    lathold = lat;
-                                    lat = airport.latitude_deg;
-                                }
-                                if lonhold == 0.0 {
-                                    lonhold = airport.longitude_deg;
-                                    lon = airport.longitude_deg;
-                                }
-                                else {
-                                    lonhold = lon;
-                                    lon = airport.longitude_deg;
-                                }
-                                airportname = &airport.name;
-                                airportstate = &airport.iso_region;
-                                airportcountry = &airport.iso_country;
-                                airportiata = &airport.iata_code;
-                                airporticao = &airport.icao_code;
-                                airportfound = true;
-                                break;
-                            }
-                        }
-                    }
-                    //airport name and country
-                    if airportfound == false {
-                        for airport in airports.iter() {
-                            if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
-                                if lathold == 0.0 {
-                                    lathold = airport.latitude_deg;
-                                    lat = airport.latitude_deg;
-                                }
-                                else {
-                                    lathold = lat;
-                                    lat = airport.latitude_deg;
-                                }
-                                if lonhold == 0.0 {
-                                    lonhold = airport.longitude_deg;
-                                    lon = airport.longitude_deg;
-                                }
-                                else {
-                                    lonhold = lon;
-                                    lon = airport.longitude_deg;
-                                }
-                                airportname = &airport.name;
-                                airportstate = &airport.iso_region;
-                                airportcountry = &airport.iso_country;
-                                airportiata = &airport.iata_code;
-                                airporticao = &airport.icao_code;
-                                airportfound = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                //if only one search term
-                else {
-                    //try to match local id
-                    for airport in airports.iter() {
-                        if querycollect[0].to_ascii_lowercase() == airport.local_code.to_ascii_lowercase() {
-                            if lathold == 0.0 {
-                                lathold = airport.latitude_deg;
-                                lat = airport.latitude_deg;
-                            }
-                            else {
-                                lathold = lat;
-                                lat = airport.latitude_deg;
-                            }
-                            if lonhold == 0.0 {
-                                lonhold = airport.longitude_deg;
-                                lon = airport.longitude_deg;
-                            }
-                            else {
-                                lonhold = lon;
-                                lon = airport.longitude_deg;
-                            }
-                            airportname = &airport.name;
-                            airportstate = &airport.iso_region;
-                            airportcountry = &airport.iso_country;
-                            airportiata = &airport.iata_code;
-                            airporticao = &airport.icao_code;
-                            airportfound = true;
-                            break;
-                        }
-                    }
-                    //try to match city
-                    if airportfound == false {
-                        for airport in airports.iter() {
-                            if unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
-                                if lathold == 0.0 {
-                                    lathold = airport.latitude_deg;
-                                    lat = airport.latitude_deg;
-                                }
-                                else {
-                                    lathold = lat;
-                                    lat = airport.latitude_deg;
-                                }
-                                if lonhold == 0.0 {
-                                    lonhold = airport.longitude_deg;
-                                    lon = airport.longitude_deg;
-                                }
-                                else {
-                                    lonhold = lon;
-                                    lon = airport.longitude_deg;
-                                }
-                                airportname = &airport.name;
-                                airportstate = &airport.iso_region;
-                                airportcountry = &airport.iso_country;
-                                airportiata = &airport.iata_code;
-                                airporticao = &airport.icao_code;
-                                airportfound = true;
-                                break;
-                            }
-                        }
-                    }
-                    //search in airport name
-                    if airportfound == false {
-                        for airport in airports.iter() {
-                            if unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
-                                if lathold == 0.0 {
-                                    lathold = airport.latitude_deg;
-                                    lat = airport.latitude_deg;
-                                }
-                                else {
-                                    lathold = lat;
-                                    lat = airport.latitude_deg;
-                                }
-                                if lonhold == 0.0 {
-                                    lonhold = airport.longitude_deg;
-                                    lon = airport.longitude_deg;
-                                }
-                                else {
-                                    lonhold = lon;
-                                    lon = airport.longitude_deg;
-                                }
-                                airportname = &airport.name;
-                                airportstate = &airport.iso_region;
-                                airportcountry = &airport.iso_country;
-                                airportiata = &airport.iata_code;
-                                airporticao = &airport.icao_code;
-                                airportfound = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            if airportfound == true {
-                counter += 1;
-                let distance = distancecalc(lathold,lonhold,lat,lon,unit);
-                totaldist += distance;
-                let mut airportnametrail = "";
-                //truncate airport name if too long
-                if airportname.chars().count()>74 {
-                    airportname = &airportname[..71];
-                    airportnametrail = "...";
-                }
-                let mut state = "";
-                let mut statesuffix = "";
-                if airportcountry == "US" {
-                    state = &airportstate[3..];
-                    statesuffix = "-";
-                }
-                let paddingiata = 3-airportiata.chars().count();
-                let paddingicao = 4-airporticao.chars().count();
-                let paddingname = 77-airportname.chars().count()-state.chars().count()-statesuffix.chars().count();
-                println!("{:>paddingiata$}/{:>paddingicao$} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, airportnametrail, state.purple(), statesuffix.purple(), airportcountry.purple(), distance, unit, totaldist, unit);
+            else if queries[0] == ("unit=km") {
+                return (4, counter, totaldist);
             }
             else {
-                //truncate query if too long
-                let mut querytrail = "";
-                let queryname;
-                if query.chars().count()>70 {
-                    queryname = &query[..67];
-                    querytrail = "...";
-                }
-                else{
-                    queryname = &query;
-                }
-                println!("'{}{}' could not be found.", queryname.cyan(), querytrail.cyan());
+                println!("Unrecognized unit.");
+                println!("");
+                return (5, counter, totaldist);
             }
         }
-        println!("----------------------------------------------------------------------------------------------------------------------");
-        let mut countersuffix: String = "flight".to_string();
-        if counter != 1 {
-            countersuffix = "flights".to_string();
+        //check for single flag (search function)
+        else if (queries.len() == 1) && (argslen == 1){
+            airportsearch(&queries[0], airports);
+            return (5, counter, totaldist);
         }
-        let paddingcounter = 114-countersuffix.chars().count()-counter.to_string().chars().count();
-        let totalformat = format!("{:.1}", totaldist);
-        if counter > 0 {
-            println!("{} {}{:>paddingcounter$} {}", counter.to_string().cyan().bold(), countersuffix.bold(), totalformat.to_string().cyan().bold(), unit.bold());
+    }
+
+    if argcounter == 0 {
+        println!("");
+        println!("{}{}{}","IATA/ICAO - Airport Name".blue().bold(), "                                                                         Distance        ".blue().bold(), "Total".blue().bold());
+    }
+
+    println!("----------------------------------------------------------------------------------------------------------------------");
+
+    for query in queries.iter() {
+        airportfound = false;
+        //check if empty term
+        if query.trim().len() == 0 {
+            println!("Empty term.");
+            continue;
+        }
+        //search icaos
+        if query.chars().count() == 4 {
+            for airport in airports.iter() {
+                //check for icao identifiers
+                if query.to_ascii_lowercase() == airport.icao_code.to_ascii_lowercase() {
+                    if lathold == 0.0 {
+                        lathold = airport.latitude_deg;
+                        lat = airport.latitude_deg;
+                    }
+                    else {
+                        lathold = lat;
+                        lat = airport.latitude_deg;
+                    }
+                    if lonhold == 0.0 {
+                        lonhold = airport.longitude_deg;
+                        lon = airport.longitude_deg;
+                    }
+                    else {
+                        lonhold = lon;
+                        lon = airport.longitude_deg;
+                    }
+                    airportname = &airport.name;
+                    airportstate = &airport.iso_region;
+                    airportcountry = &airport.iso_country;
+                    airportiata = &airport.iata_code;
+                    airporticao = &airport.icao_code;
+                    airportfound = true;
+                    break;
+                }
+            }
+        }
+        //search iatas
+        else if query.chars().count() == 3 {
+            for airport in airports.iter() {
+                //check for iata identifiers
+                if query.to_ascii_lowercase() == airport.iata_code.to_ascii_lowercase() {
+                    if lathold == 0.0 {
+                        lathold = airport.latitude_deg;
+                        lat = airport.latitude_deg;
+                    }
+                    else {
+                        lathold = lat;
+                        lat = airport.latitude_deg;
+                    }
+                    if lonhold == 0.0 {
+                        lonhold = airport.longitude_deg;
+                        lon = airport.longitude_deg;
+                    }
+                    else {
+                        lonhold = lon;
+                        lon = airport.longitude_deg;
+                    }
+                    airportname = &airport.name;
+                    airportstate = &airport.iso_region;
+                    airportcountry = &airport.iso_country;
+                    airportiata = &airport.iata_code;
+                    airporticao = &airport.icao_code;
+                    airportfound = true;
+                    break;
+                }
+            }
+        }
+        //search in cities
+        //city uses contains because some cities in csv contain extraneous terms
+        if airportfound == false {
+            let querysplit = query.split(", ");
+            let querycollect = querysplit.collect::<Vec<&str>>();
+            //try to match city and country or city and state first
+            if querycollect.len() > 1{
+                for airport in airports.iter() {
+                    //city and state
+                    if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                        if lathold == 0.0 {
+                            lathold = airport.latitude_deg;
+                            lat = airport.latitude_deg;
+                        }
+                        else {
+                            lathold = lat;
+                            lat = airport.latitude_deg;
+                        }
+                        if lonhold == 0.0 {
+                            lonhold = airport.longitude_deg;
+                            lon = airport.longitude_deg;
+                        }
+                        else {
+                            lonhold = lon;
+                            lon = airport.longitude_deg;
+                        }
+                        airportname = &airport.name;
+                        airportstate = &airport.iso_region;
+                        airportcountry = &airport.iso_country;
+                        airportiata = &airport.iata_code;
+                        airporticao = &airport.icao_code;
+                        airportfound = true;
+                        break;
+                    }
+                }
+                //city and country
+                if airportfound == false {
+                    for airport in airports.iter() {
+                        if (unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                            if lathold == 0.0 {
+                                lathold = airport.latitude_deg;
+                                lat = airport.latitude_deg;
+                            }
+                            else {
+                                lathold = lat;
+                                lat = airport.latitude_deg;
+                            }
+                            if lonhold == 0.0 {
+                                lonhold = airport.longitude_deg;
+                                lon = airport.longitude_deg;
+                            }
+                            else {
+                                lonhold = lon;
+                                lon = airport.longitude_deg;
+                            }
+                            airportname = &airport.name;
+                            airportstate = &airport.iso_region;
+                            airportcountry = &airport.iso_country;
+                            airportiata = &airport.iata_code;
+                            airporticao = &airport.icao_code;
+                            airportfound = true;
+                            break;
+                        }
+                    }
+                }
+                //airport name and state
+                if airportfound == false {
+                    for airport in airports.iter() {
+                        if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (format!("{}{}", "us-", querycollect[1]).to_ascii_lowercase() == airport.iso_region.to_ascii_lowercase()) {
+                            if lathold == 0.0 {
+                                lathold = airport.latitude_deg;
+                                lat = airport.latitude_deg;
+                            }
+                            else {
+                                lathold = lat;
+                                lat = airport.latitude_deg;
+                            }
+                            if lonhold == 0.0 {
+                                lonhold = airport.longitude_deg;
+                                lon = airport.longitude_deg;
+                            }
+                            else {
+                                lonhold = lon;
+                                lon = airport.longitude_deg;
+                            }
+                            airportname = &airport.name;
+                            airportstate = &airport.iso_region;
+                            airportcountry = &airport.iso_country;
+                            airportiata = &airport.iata_code;
+                            airporticao = &airport.icao_code;
+                            airportfound = true;
+                            break;
+                        }
+                    }
+                }
+                //airport name and country
+                if airportfound == false {
+                    for airport in airports.iter() {
+                        if (unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase())) && (querycollect[1].to_ascii_lowercase() == airport.iso_country.to_ascii_lowercase()) {
+                            if lathold == 0.0 {
+                                lathold = airport.latitude_deg;
+                                lat = airport.latitude_deg;
+                            }
+                            else {
+                                lathold = lat;
+                                lat = airport.latitude_deg;
+                            }
+                            if lonhold == 0.0 {
+                                lonhold = airport.longitude_deg;
+                                lon = airport.longitude_deg;
+                            }
+                            else {
+                                lonhold = lon;
+                                lon = airport.longitude_deg;
+                            }
+                            airportname = &airport.name;
+                            airportstate = &airport.iso_region;
+                            airportcountry = &airport.iso_country;
+                            airportiata = &airport.iata_code;
+                            airporticao = &airport.icao_code;
+                            airportfound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            //if only one search term
+            else {
+                //try to match local id
+                for airport in airports.iter() {
+                    if querycollect[0].to_ascii_lowercase() == airport.local_code.to_ascii_lowercase() {
+                        if lathold == 0.0 {
+                            lathold = airport.latitude_deg;
+                            lat = airport.latitude_deg;
+                        }
+                        else {
+                            lathold = lat;
+                            lat = airport.latitude_deg;
+                        }
+                        if lonhold == 0.0 {
+                            lonhold = airport.longitude_deg;
+                            lon = airport.longitude_deg;
+                        }
+                        else {
+                            lonhold = lon;
+                            lon = airport.longitude_deg;
+                        }
+                        airportname = &airport.name;
+                        airportstate = &airport.iso_region;
+                        airportcountry = &airport.iso_country;
+                        airportiata = &airport.iata_code;
+                        airporticao = &airport.icao_code;
+                        airportfound = true;
+                        break;
+                    }
+                }
+                //try to match city
+                if airportfound == false {
+                    for airport in airports.iter() {
+                        if unidecode(&airport.municipality).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
+                            if lathold == 0.0 {
+                                lathold = airport.latitude_deg;
+                                lat = airport.latitude_deg;
+                            }
+                            else {
+                                lathold = lat;
+                                lat = airport.latitude_deg;
+                            }
+                            if lonhold == 0.0 {
+                                lonhold = airport.longitude_deg;
+                                lon = airport.longitude_deg;
+                            }
+                            else {
+                                lonhold = lon;
+                                lon = airport.longitude_deg;
+                            }
+                            airportname = &airport.name;
+                            airportstate = &airport.iso_region;
+                            airportcountry = &airport.iso_country;
+                            airportiata = &airport.iata_code;
+                            airporticao = &airport.icao_code;
+                            airportfound = true;
+                            break;
+                        }
+                    }
+                }
+                //search in airport name
+                if airportfound == false {
+                    for airport in airports.iter() {
+                        if unidecode(&airport.name).to_ascii_lowercase().contains(&unidecode(&querycollect[0]).to_ascii_lowercase()) {
+                            if lathold == 0.0 {
+                                lathold = airport.latitude_deg;
+                                lat = airport.latitude_deg;
+                            }
+                            else {
+                                lathold = lat;
+                                lat = airport.latitude_deg;
+                            }
+                            if lonhold == 0.0 {
+                                lonhold = airport.longitude_deg;
+                                lon = airport.longitude_deg;
+                            }
+                            else {
+                                lonhold = lon;
+                                lon = airport.longitude_deg;
+                            }
+                            airportname = &airport.name;
+                            airportstate = &airport.iso_region;
+                            airportcountry = &airport.iso_country;
+                            airportiata = &airport.iata_code;
+                            airporticao = &airport.icao_code;
+                            airportfound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if airportfound == true {
+            counter += 1;
+            let distance = distancecalc(lathold,lonhold,lat,lon,unit);
+            totaldist += distance;
+            let mut airportnametrail = "";
+            //truncate airport name if too long
+            if airportname.chars().count()>74 {
+                airportname = &airportname[..71];
+                airportnametrail = "...";
+            }
+            let mut state = "";
+            let mut statesuffix = "";
+            if airportcountry == "US" {
+                state = &airportstate[3..];
+                statesuffix = "-";
+            }
+            let paddingiata = 3-airportiata.chars().count();
+            let paddingicao = 4-airporticao.chars().count();
+            let paddingname = 77-airportname.chars().count()-state.chars().count()-statesuffix.chars().count();
+            println!("{:>paddingiata$}/{:>paddingicao$} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, airportnametrail, state.purple(), statesuffix.purple(), airportcountry.purple(), distance, unit, totaldist, unit);
         }
         else {
-            println!("{} {}{:>106} {}", "0".cyan().bold(), "flights".bold(), "0".cyan().bold(), unit.bold());
+            //truncate query if too long
+            let mut querytrail = "";
+            let queryname;
+            if query.chars().count()>70 {
+                queryname = &query[..67];
+                querytrail = "...";
+            }
+            else{
+                queryname = &query;
+            }
+            println!("'{}{}' could not be found.", queryname.cyan(), querytrail.cyan());
         }
-        println!("");
     }
-    return 0;
+    //only print if more than one subtotal
+    if argslen > 1 {
+        println!("----------------------------------------------------------------------------------------------------------------------");
+    }
+
+    //remove first airport from counter
+    if counter > 0 {
+        counter -= 1;
+    }
+    let mut countersuffix: String = "flight".to_string();
+    if counter != 1 {
+        countersuffix = "flights".to_string();
+    }
+    let paddingcounter = 114-countersuffix.chars().count()-counter.to_string().chars().count();
+    let totalformat = format!("{:.1}", totaldist);
+    //only print if more than one subtotal
+    if argslen > 1 {
+        if counter > 0 {
+            println!("{} {}{:>paddingcounter$} {}", counter.to_string().cyan(), countersuffix, totalformat.to_string().cyan(), unit);
+        }
+        else {
+            println!("{} {}{:>106} {}", "0".cyan(), "flights", "0".cyan(), unit);
+        }
+    }
+    
+    //only print newline for last iteration
+    if argcounter == (argslen as i32)-1 {
+        println!("======================================================================================================================");
+        return (6, counter, totaldist);
+    }
+    return (0, counter, totaldist);
 }
 
 fn airportsearch(query: &String, airports: &Vec<&Airport>) {
@@ -785,24 +804,68 @@ fn main() {
 
     loop {
         let unwrappedargs: String = Input::new().with_prompt(":").history_with(&mut history).interact_text().unwrap();
-        let result = queryhandler(&airports, unit, version, &factypes, unwrappedargs);
-        if result == 2 {
-            unit = "mi";
-            println!("Units set to {}.", unit.cyan());
-            println!("");
-        }
-        else if result == 3 {
-            unit = "nm";
-            println!("Units set to {}.", unit.cyan());
-            println!("");
-        }
-        else if result == 4 {
-            unit = "km";
-            println!("Units set to {}.", unit.cyan());
-            println!("");
-        }
-        else if result == 1 {
-            break;
+        let splitargs = unwrappedargs.split(";");
+        let splitargcollection = splitargs.collect::<Vec<&str>>();
+        
+        //arg index
+        let mut argcounter: i32 = 0;
+
+        let mut grtotalflights: i32 = 0;
+        let mut grtotaldist: f64 = 0.0;
+
+        for args in &splitargcollection {
+            let result = queryhandler(&airports, unit, version, &factypes, args.to_string(), argcounter, splitargcollection.len());
+
+            //increment argcounter
+            argcounter += 1;
+
+            //add up total flights and distance
+            grtotalflights += result.1;
+            grtotaldist += result.2;
+            
+            //exit command
+            if result.0 == 1 {
+                return;
+            }
+
+            else if result.0 == 2 {
+                unit = "mi";
+                println!("Units set to {}.", unit.cyan());
+                println!("");
+                break;
+            }
+            else if result.0 == 3 {
+                unit = "nm";
+                println!("Units set to {}.", unit.cyan());
+                println!("");
+                break;
+            }
+            else if result.0 == 4 {
+                unit = "km";
+                println!("Units set to {}.", unit.cyan());
+                println!("");
+                break;
+            }
+            //query handled, break
+            else if result.0 == 5 {
+                break;
+            }
+
+            else if result.0 == 6 {
+                let mut grtotalflightssuffix: String = "flight".to_string();
+                if grtotalflights != 1 {
+                    grtotalflightssuffix = "flights".to_string();
+                }
+                let grpaddingcounter = 114-grtotalflightssuffix.chars().count()-grtotalflights.to_string().chars().count();
+                let grtotaldistformat = format!("{:.1}", grtotaldist);
+                if grtotalflights > 0 {
+                    println!("{} {}{:>grpaddingcounter$} {}", grtotalflights.to_string().red().bold(), grtotalflightssuffix.bold(), grtotaldistformat.to_string().red().bold(), unit.bold());
+                }
+                else {
+                    println!("{} {}{:>106} {}", "0".red().bold(), "flights".bold(), "0".red().bold(), unit.bold());
+                }
+                println!("");
+            }
         }
     }
 }
