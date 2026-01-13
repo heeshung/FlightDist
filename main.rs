@@ -431,12 +431,12 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     if counter != 1 {
         countersuffix = "flights".to_string();
     }
-    let paddingcounter = 114-countersuffix.chars().count()-counter.to_string().chars().count();
+    let paddingcounter = 104-countersuffix.chars().count()-counter.to_string().chars().count();
     let totalformat = format!("{:.1}", totaldist);
     //only print if more than one subtotal
     if argslen > 1 {
         if counter > 0 {
-            println!("{} {}{:>paddingcounter$} {}", counter.to_string().cyan(), countersuffix, totalformat.to_string().cyan(), unit);
+            println!("{}{} {}{:>paddingcounter$} {}", "Subtotal: ".yellow(), counter.to_string().cyan(), countersuffix, totalformat.to_string().cyan(), unit);
         }
         else {
             println!("{} {}{:>106} {}", "0".cyan(), "flights", "0".cyan(), unit);
@@ -715,7 +715,8 @@ fn helpdisp() {
     println!("");
     println!("{}", "Flight Distance Function".yellow().bold());
     println!("Enter terms separated by hyphens ('{}').", "-".cyan());
-    println!("{}'{}'", "Example: ", "HND-KSEA-o'hare-Cape Town, ZA-Fort Lauderdale, FL".cyan());
+    println!("Blocks of terms can be delimited with semicolons ('{}').", ";".cyan());
+    println!("{}'{}'", "Example: ", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL".cyan());
     println!("");
     println!("{}", "Term Formatting".yellow().bold());
     println!("Acceptable term formats in order of accuracy (highest to lowest):");
@@ -856,13 +857,13 @@ fn main() {
                 if grtotalflights != 1 {
                     grtotalflightssuffix = "flights".to_string();
                 }
-                let grpaddingcounter = 114-grtotalflightssuffix.chars().count()-grtotalflights.to_string().chars().count();
+                let grpaddingcounter = 104-grtotalflightssuffix.chars().count()-grtotalflights.to_string().chars().count();
                 let grtotaldistformat = format!("{:.1}", grtotaldist);
                 if grtotalflights > 0 {
-                    println!("{} {}{:>grpaddingcounter$} {}", grtotalflights.to_string().red().bold(), grtotalflightssuffix.bold(), grtotaldistformat.to_string().red().bold(), unit.bold());
+                    println!("{}{} {}{:>grpaddingcounter$} {}", "Total:    ".red().bold(), grtotalflights.to_string().cyan().bold(), grtotalflightssuffix.bold(), grtotaldistformat.to_string().cyan().bold(), unit.bold());
                 }
                 else {
-                    println!("{} {}{:>106} {}", "0".red().bold(), "flights".bold(), "0".red().bold(), unit.bold());
+                    println!("{} {}{:>106} {}", "0".cyan().bold(), "flights".bold(), "0".cyan().bold(), unit.bold());
                 }
                 println!("");
             }
