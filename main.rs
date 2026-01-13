@@ -162,6 +162,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 }
             }
             //search in cities
+            //city uses contains because some cities in csv contain extraneous terms
             if airportfound == false {
                 let querysplit = query.split(", ");
                 let querycollect = querysplit.collect::<Vec<&str>>();
@@ -494,6 +495,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
             }
         }
         //search in cities
+        //city uses contains because some cities in csv contain extraneous terms
         if airportfound == false {
             let querysplit = query.split(", ");
             let querycollect = querysplit.collect::<Vec<&str>>();
