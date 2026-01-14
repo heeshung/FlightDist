@@ -760,7 +760,6 @@ fn main() {
 
     let mut rdr = csv::Reader::from_reader(data.as_bytes());
     let mut unsortedairports: Vec<Airport> = vec![];
-    let mut halfsorted: Vec<&Airport> = vec![];
     let mut airports: Vec<&Airport> = vec![];
 
     let factypes: Vec<&str> = vec!["large_airport", "medium_airport", "small_airport", "seaplane_base", "heliport", "balloonport"];
@@ -771,26 +770,22 @@ fn main() {
         unsortedairports.push(unwrappedairport);
     }
 
-    //sort airports by facility size
+    //sort airports by facility size and icao code existence
     for factype in &factypes {
+        let mut factempholdyesicao: Vec<&Airport> = vec![];
+        let mut factempholdnoicao: Vec<&Airport> = vec![];
         for airport in &unsortedairports {
             if airport.facility == factype.to_string() {
-                halfsorted.push(airport);
+                if airport.icao_code != "" {
+                    factempholdyesicao.push(airport);
+                }
+                else {
+                    factempholdnoicao.push(airport);
+                }
             }
         }
-    }
-
-    //sort airports by if icao code exists
-    for airport in &halfsorted {
-        if airport.icao_code != "" {
-            airports.push(airport);
-        }
-    }
-
-    for airport in &halfsorted {
-        if airport.icao_code == "" {
-            airports.push(airport);
-        }
+        airports.append(&mut factempholdyesicao);
+        airports.append(&mut factempholdnoicao);
     }
 
     //initialize unit
