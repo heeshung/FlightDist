@@ -764,7 +764,6 @@ fn helpdisp() {
     println!("'{}'/'{}'/'{}'{}", "unit=mi".cyan(), "unit=km".cyan(), "unit=nm".cyan(), ": Set units for miles, kilometers, or nautical miles.");
     println!("'{}'{}", "about".cyan(), ": Displays about screen.");
     println!("'{}'{}", "exit".cyan(), ": Exits FlightDist.");
-    println!("");
 }
 
 fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>, latestversion: &str){
