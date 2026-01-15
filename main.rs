@@ -30,6 +30,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     let mut lonhold: f64 = 0.0;
     let mut airporticao = "";
     let mut airportiata = "";
+    let mut airportlocalid = "";
     let mut airportname = "";
     let mut airportstate = "";
     let mut airportcountry = "";
@@ -129,6 +130,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     airportcountry = &airport.iso_country;
                     airportiata = &airport.iata_code;
                     airporticao = &airport.icao_code;
+                    airportlocalid = &airport.local_code;
                     airportfound = true;
                     break;
                 }
@@ -160,6 +162,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     airportcountry = &airport.iso_country;
                     airportiata = &airport.iata_code;
                     airporticao = &airport.icao_code;
+                    airportlocalid = &airport.local_code;
                     airportfound = true;
                     break;
                 }
@@ -196,6 +199,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                         airportcountry = &airport.iso_country;
                         airportiata = &airport.iata_code;
                         airporticao = &airport.icao_code;
+                        airportlocalid = &airport.local_code;
                         airportfound = true;
                         break;
                     }
@@ -225,6 +229,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                             airportcountry = &airport.iso_country;
                             airportiata = &airport.iata_code;
                             airporticao = &airport.icao_code;
+                            airportlocalid = &airport.local_code;
                             airportfound = true;
                             break;
                         }
@@ -255,6 +260,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                             airportcountry = &airport.iso_country;
                             airportiata = &airport.iata_code;
                             airporticao = &airport.icao_code;
+                            airportlocalid = &airport.local_code;
                             airportfound = true;
                             break;
                         }
@@ -285,6 +291,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                             airportcountry = &airport.iso_country;
                             airportiata = &airport.iata_code;
                             airporticao = &airport.icao_code;
+                            airportlocalid = &airport.local_code;
                             airportfound = true;
                             break;
                         }
@@ -317,6 +324,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                         airportcountry = &airport.iso_country;
                         airportiata = &airport.iata_code;
                         airporticao = &airport.icao_code;
+                        airportlocalid = &airport.local_code;
                         airportfound = true;
                         break;
                     }
@@ -346,6 +354,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                             airportcountry = &airport.iso_country;
                             airportiata = &airport.iata_code;
                             airporticao = &airport.icao_code;
+                            airportlocalid = &airport.local_code;
                             airportfound = true;
                             break;
                         }
@@ -376,6 +385,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                             airportcountry = &airport.iso_country;
                             airportiata = &airport.iata_code;
                             airporticao = &airport.icao_code;
+                            airportlocalid = &airport.local_code;
                             airportfound = true;
                             break;
                         }
@@ -387,6 +397,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
             counter += 1;
             let distance = distancecalc(lathold,lonhold,lat,lon,unit);
             totaldist += distance;
+
             let mut airportnametrail = "";
             //truncate airport name if too long
             if airportname.chars().count()>74 {
@@ -395,14 +406,20 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
             }
             let mut state = "";
             let mut statesuffix = "";
+            let mut airportfaa = "";
             if airportcountry == "US" {
                 state = &airportstate[3..];
                 statesuffix = "-";
+
+                //faa lid if no icao
+                if airporticao == "" {
+                    airportfaa = airportlocalid;
+                }
             }
-            let paddingiata = 3-airportiata.chars().count();
-            let paddingicao = 4-airporticao.chars().count();
-            let paddingname = 77-airportname.chars().count()-state.chars().count()-statesuffix.chars().count();
-            println!("{:>paddingiata$}/{:>paddingicao$} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportname, airportnametrail, state.purple(), statesuffix.purple(), airportcountry.purple(), distance, unit, totaldist, unit);
+            let paddingiata = paddingsafety(airportiata.chars().count(), 3);
+            let paddingicaofaa = paddingsafety(airporticao.chars().count()+airportfaa.chars().count(), 4);
+            let paddingname = paddingsafety(airportname.chars().count()+state.chars().count()+statesuffix.chars().count(), 77);
+            println!("{:>paddingiata$}/{:>paddingicaofaa$}{} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportfaa.yellow(), airportname, airportnametrail, state.purple(), statesuffix.purple(), airportcountry.purple(), distance, unit, totaldist, unit);
         }
         else {
             //truncate query if too long
@@ -415,7 +432,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
             else{
                 queryname = &query;
             }
-            println!("'{}{}' could not be found.", queryname.cyan(), querytrail.cyan());
+            println!("'{}{}' {}", queryname.cyan(), querytrail.cyan(), "could not be found.");
         }
     }
     //only print if more than one subtotal
@@ -431,15 +448,15 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     if counter != 1 {
         countersuffix = "flights".to_string();
     }
-    let paddingcounter = 104-countersuffix.chars().count()-counter.to_string().chars().count();
+    let paddingcounter = paddingsafety(countersuffix.chars().count()+counter.to_string().chars().count(), 103);
     let totalformat = format!("{:.1}", totaldist);
     //only print if more than one subtotal
     if argslen > 1 {
         if counter > 0 {
-            println!("{}{} {}{:>paddingcounter$} {}", "Subtotal: ".yellow(), counter.to_string().cyan(), countersuffix, totalformat.to_string().cyan(), unit);
+            println!("{}  {} {}{:>paddingcounter$} {}", "Subtotal:".yellow(), counter.to_string().cyan(), countersuffix, totalformat.to_string().cyan(), unit);
         }
         else {
-            println!("{} {}{:>106} {}", "0".cyan(), "flights", "0".cyan(), unit);
+            println!("{}  {} {}{:>95} {}", "Subtotal:".yellow(), "0".cyan(), "flights", "0".cyan(), unit);
         }
     }
     
@@ -665,27 +682,27 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
             println!("");
             println!("{}", "Airport Information".blue().bold());
             println!("-------------------");
-            println!("{}{}", "Airport Name: ".yellow(), airportname);
-            println!("{}{}", "IATA Code: ".yellow(), airportiata);
-            println!("{}{}", "ICAO Code: ".yellow(), airporticao);
-            println!("{}{}", "Local ID/FAA LID: ".yellow(), airportlocalid);
-            println!("{}{}", "City: ".yellow(), airportcity);
-            println!("{}{}", "State: ".yellow(), airportstate);
-            println!("{}{}", "Country: ".yellow(), airportcountry);
-            println!("{}{}", "Latitude: ".yellow(), lat);
-            println!("{}{}", "Longitude: ".yellow(), lon);
+            println!("{} {}", "Airport Name:".yellow(), airportname);
+            println!("{} {}", "IATA Code:".yellow(), airportiata);
+            println!("{} {}", "ICAO Code:".yellow(), airporticao);
+            println!("{} {}", "Local ID/FAA LID:".yellow(), airportlocalid);
+            println!("{} {}", "City:".yellow(), airportcity);
+            println!("{} {}", "State:".yellow(), airportstate);
+            println!("{} {}", "Country:".yellow(), airportcountry);
+            println!("{} {}", "Latitude:".yellow(), lat);
+            println!("{} {}", "Longitude:".yellow(), lon);
 
             //handle blank elevations
             let elevationfinal = elevation.unwrap_or(-9999999);
             if elevationfinal == -9999999 {
-                println!("{}", "Elevation: ".yellow());
+                println!("{} ", "Elevation:".yellow());
             }
             else {
-                println!("{}{}{}", "Elevation: ".yellow(), elevationfinal, " ft");
+                println!("{} {} {}", "Elevation:".yellow(), elevationfinal, "ft");
             }
         }
         else {
-            println!("'{}' could not be found.", query.cyan());
+            println!("'{}' {}", query.cyan(), "could not be found.");
         }
     }
     println!("");
@@ -716,19 +733,19 @@ fn helpdisp() {
     println!("{}", "Flight Distance Function".yellow().bold());
     println!("Enter terms separated by hyphens ('{}').", "-".cyan());
     println!("Blocks of terms can be delimited with semicolons ('{}').", ";".cyan());
-    println!("{}'{}'", "Example: ", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL".cyan());
+    println!("{} '{}'", "Example:", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL".cyan());
     println!("");
     println!("{}", "Term Formatting".yellow().bold());
     println!("Acceptable term formats in order of accuracy (highest to lowest):");
-    println!("{}'{}'", "-ICAO Code: ", "KABE".cyan());
-    println!("{}'{}'", "-IATA Code: ", "ABE".cyan());
-    println!("{}'{}'", "-FAA LID: ", "ABE".cyan());
-    println!("{}'{}'", "-Airport Name: ", "Lehigh Valley International".cyan());
-    println!("{}'{}'", "-Airport Name, State Code: ", "Lehigh Valley International, PA".cyan());
-    println!("{}'{}'", "-Airport Name, Country Code: ", "Lehigh Valley International, US".cyan());
-    println!("{}'{}'", "-City, State Code: ", "Allentown, PA".cyan());
-    println!("{}'{}'", "-City, Country Code: ", "Allentown, US".cyan());
-    println!("{}'{}'", "-City Only: ", "Allentown".cyan());
+    println!("{} '{}'", "-ICAO Code:", "KABE".cyan());
+    println!("{} '{}'", "-IATA Code:", "ABE".cyan());
+    println!("{} '{}'", "-FAA LID:", "ABE".cyan());
+    println!("{} '{}'", "-Airport Name:", "Lehigh Valley International".cyan());
+    println!("{} '{}'", "-Airport Name, State Code:", "Lehigh Valley International, PA".cyan());
+    println!("{} '{}'", "-Airport Name, Country Code:", "Lehigh Valley International, US".cyan());
+    println!("{} '{}'", "-City, State Code:", "Allentown, PA".cyan());
+    println!("{} '{}'", "-City, Country Code:", "Allentown, US".cyan());
+    println!("{} '{}'", "-City Only:", "Allentown".cyan());
     println!("");
     println!("{}", "Navigation".yellow().bold());
     println!("Use up/down arrow to recall and navigate through past searches or queries.");
@@ -747,6 +764,15 @@ fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>){
     println!("Included facility types: {:?}", factypes);
     println!("{} facilities loaded.", airports_len.to_string().green());
     println!("");
+}
+
+fn paddingsafety(padding: usize, default: usize) -> usize {
+    if default >= padding {
+        return default-padding;
+    }
+    else {
+        return 0;
+    }
 }
 
 fn main() {
@@ -852,13 +878,13 @@ fn main() {
                 if grtotalflights != 1 {
                     grtotalflightssuffix = "flights".to_string();
                 }
-                let grpaddingcounter = 104-grtotalflightssuffix.chars().count()-grtotalflights.to_string().chars().count();
+                let grpaddingcounter = paddingsafety(grtotalflightssuffix.chars().count()+grtotalflights.to_string().chars().count(), 103);
                 let grtotaldistformat = format!("{:.1}", grtotaldist);
                 if grtotalflights > 0 {
-                    println!("{}{} {}{:>grpaddingcounter$} {}", "Total:    ".red().bold(), grtotalflights.to_string().cyan().bold(), grtotalflightssuffix.bold(), grtotaldistformat.to_string().cyan().bold(), unit.bold());
+                    println!("{}     {} {}{:>grpaddingcounter$} {}", "Total:".red().bold(), grtotalflights.to_string().cyan().bold(), grtotalflightssuffix.bold(), grtotaldistformat.to_string().cyan().bold(), unit.bold());
                 }
                 else {
-                    println!("{} {}{:>106} {}", "0".cyan().bold(), "flights".bold(), "0".cyan().bold(), unit.bold());
+                    println!("{}     {} {}{:>95} {}", "Total:".red().bold(), "0".cyan().bold(), "flights".bold(), "0".cyan().bold(), unit.bold());
                 }
                 println!("");
             }
