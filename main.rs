@@ -737,11 +737,11 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 fn helpdisp() {
     println!("{}", "Search Function".yellow().bold());
     println!("Enter single term to use search function.");
-    println!("{} {} {}{}", "If a facility has an FAA LID, but not an ICAO code,", "the FAA LID will be shown in place of the ICAO code in".bold(), "yellow".yellow(), ".");
     println!("");
     println!("{}", "Flight Distance Function".yellow().bold());
     println!("Enter terms separated by hyphens ('{}').", "-".cyan());
     println!("Blocks of terms can be delimited with semicolons ('{}').", ";".cyan());
+    println!("{} {} {}{}", "If a facility has an FAA LID, but not an ICAO code,", "the FAA LID will be shown in place of the ICAO code in".bold(), "yellow".yellow(), ".");
     println!("{} '{}'", "Example:", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL-S60".cyan());
     println!("");
     println!("{}", "Term Formatting".yellow().bold());
