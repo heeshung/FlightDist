@@ -1,6 +1,6 @@
 [package]
 name = "FlightDist"
-version = "1.6.2"
+version = "1.6.3"
 edition = "2024"
 
 [dependencies]
@@ -15,6 +15,8 @@ reqwest = { version = "0.12", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 version-compare = "0.2"
 terminal_hyperlink = "0.1.0"
+self_update = { version = "0.42.0", features = ["archive-zip", "compression-zip-deflate"] }
+press-btn-continue = "0.2.0"
 
 [[bin]]
 name = "FlightDist"

@@ -26,8 +26,10 @@ Acceptable term formats in order of accuracy (highest to lowest):
 Use up/down arrow to recall and navigate through past searches or queries.
 
 ### Commands
-- ```help```: Displays help screen.
+- ```help```: Display help screen.
 - ```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
+- ```update```: Update FlightDist.
+- ```about```: Display about screen.
 - ```exit```: Exits FlightDist.
 
 ## Flight Distance Example

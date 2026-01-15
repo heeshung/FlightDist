@@ -6,7 +6,6 @@ use dialoguer::{Input, BasicHistory};
 use unidecode::unidecode;
 use reqwest::header::USER_AGENT;
 use version_compare::Version;
-use terminal_hyperlink::Hyperlink;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -63,6 +62,17 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
         if queries[0].to_ascii_lowercase() == "help" {
             helpdisp();
             return (5, counter, totaldist);
+        }
+
+        //check if update
+        else if queries[0].to_ascii_lowercase() == "update" {
+            update(version).unwrap_or_else(|error| {
+                eprintln!("Error: {}", error);
+                eprintln!("{}", "Update failed!".red().bold());
+            });
+            println!("");
+            press_btn_continue::wait("FlightDist will now exit. Press any key to continue...").unwrap();
+            return (1, counter, totaldist);
         }
 
         //check if about
@@ -760,10 +770,12 @@ fn helpdisp() {
     println!("Use up/down arrow to recall and navigate through past searches or queries.");
     println!("");
     println!("{}", "Commands".yellow().bold());
-    println!("'{}'{}", "help".cyan(), ": Displays this help screen.");
+    println!("'{}'{}", "help".cyan(), ": Display this help screen.");
     println!("'{}'/'{}'/'{}'{}", "unit=mi".cyan(), "unit=km".cyan(), "unit=nm".cyan(), ": Set units for miles, kilometers, or nautical miles.");
-    println!("'{}'{}", "about".cyan(), ": Displays about screen.");
+    println!("'{}'{}", "update".cyan(), ": Update FlightDist.");
+    println!("'{}'{}", "about".cyan(), ": Display about screen.");
     println!("'{}'{}", "exit".cyan(), ": Exits FlightDist.");
+    println!("");
 }
 
 fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>, latestversion: &str){
@@ -774,7 +786,7 @@ fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>, latestver
         println!("This is the latest version.")
     }
     else if versionunwrapped < latestversionunwrapped {
-        println!("{}{}{} {}{} {}", "There's a new version of FlightDist (", latestversion.yellow(), ") available", "here".hyperlink("https://github.com/heeshung/FlightDist/releases/latest").cyan().bold(), "!", "(Ctrl + click to follow link.)");
+        println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type '", "update".cyan(), "'.");
     }
     println!("");
     println!("Included facility types: {:?}", factypes);
@@ -804,6 +816,19 @@ async fn versioncheck() -> Result<String, Box<dyn std::error::Error>> {
         .await?;
 
     Ok(resp.tag_name)
+}
+
+fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let status = self_update::backends::github::Update::configure()
+        .repo_owner("heeshung")
+        .repo_name("FlightDist")
+        .bin_name("FlightDist")
+        .show_download_progress(true)
+        .current_version(version)
+        .build()?
+        .update()?;
+    println!("Update status: `{}`!", status.version());
+    Ok(())
 }
 
 fn main() {
@@ -858,7 +883,7 @@ fn main() {
     let latestversionunwrapped = Version::from(&latestversion).unwrap();
     let versionunwrapped = Version::from(version).unwrap();
     if versionunwrapped < latestversionunwrapped {
-        println!("{}{}{} {}{} {}", "There's a new version of FlightDist (", latestversion.yellow(), ") available", "here".hyperlink("https://github.com/heeshung/FlightDist/releases/latest").cyan().bold(), "!", "(Ctrl + click to follow link.)");
+        println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type '", "update".cyan(), "'.");
     }
 
     println!("For help, type '{}'.", "help".cyan());
