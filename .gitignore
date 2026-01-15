@@ -2,4 +2,3 @@
 /flightdist binaries
 Cargo.lock
 main
-airports.json

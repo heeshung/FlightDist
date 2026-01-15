@@ -837,7 +837,7 @@ fn main() {
     let version = env!("CARGO_PKG_VERSION");
 
     //read files and parse csv
-    let file = "airports/airports.csv";
+    let file = "airports.csv";
     let data = fs::read_to_string(file).expect("File Read Error");
 
     let mut rdr = csv::Reader::from_reader(data.as_bytes());
