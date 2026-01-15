@@ -6,6 +6,7 @@ Windows: Download and unzip release, run FlightDist.
 
 ### Search Function
 Enter single term to use search function.
+If a facility has an FAA LID, but not an ICAO code, the FAA LID will be shown in yellow.
 
 ### Flight Distance Function
 Enter terms separated by hyphens ('-').
@@ -31,7 +32,7 @@ Use up/down arrow to recall and navigate through past searches or queries.
 
 ## Flight Distance Example
 ```
-:: HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL
+:: HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL-S60
 
 IATA/ICAO - Airport Name                                                                         Distance        Total
 ----------------------------------------------------------------------------------------------------------------------
@@ -39,14 +40,15 @@ HND/RJTT - Tokyo Haneda International Airport                                   
 SEA/KSEA - Seattle–Tacoma International Airport                                       [WA-US]   4803.5 mi,   4803.5 mi
 ORD/KORD - Chicago O'Hare International Airport                                       [IL-US]   1720.6 mi,   6524.1 mi
 ----------------------------------------------------------------------------------------------------------------------
-Subtotal: 2 flights                                                                                          6524.1 mi
+Subtotal:  2 flights                                                                                         6524.1 mi
 ----------------------------------------------------------------------------------------------------------------------
 CPT/FACT - Cape Town International Airport                                               [ZA]      0.0 mi,      0.0 mi
 FLL/KFLL - Fort Lauderdale Hollywood International Airport                            [FL-US]   7668.9 mi,   7668.9 mi
+KEH/ S60 - Kenmore Air Harbor LLC Seaplane Base                                       [WA-US]   2721.0 mi,  10389.9 mi
 ----------------------------------------------------------------------------------------------------------------------
-Subtotal: 1 flight                                                                                           7668.9 mi
+Subtotal:  2 flights                                                                                        10389.9 mi
 ======================================================================================================================
-Total:    3 flights                                                                                         14193.0 mi
+Total:     4 flights                                                                                        16914.0 mi
 ```
 
 ## Search Example

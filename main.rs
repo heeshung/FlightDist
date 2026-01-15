@@ -4,6 +4,9 @@ use geoutils::Location;
 use colored::Colorize;
 use dialoguer::{Input, BasicHistory};
 use unidecode::unidecode;
+use reqwest::header::USER_AGENT;
+use version_compare::Version;
+use terminal_hyperlink::Hyperlink;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -21,7 +24,12 @@ struct Airport {
     local_code: String
 }
 
-fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &Vec<&str>, unwrappedargs: String, argcounter: i32, argslen: usize) -> (i32, i32, f64) {
+#[derive(Debug, Deserialize)]
+struct Response {
+    tag_name: String
+}
+
+fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &Vec<&str>, unwrappedargs: String, argcounter: i32, argslen: usize, latestversion: &str) -> (i32, i32, f64) {
 
     //initiialize variables
     let mut lat: f64 = 0.0;
@@ -59,7 +67,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
 
         //check if about
         else if queries[0].to_ascii_lowercase() == "about" {
-            aboutdisp(airports.len(), version, factypes);
+            aboutdisp(airports.len(), version, factypes, latestversion);
             return (5, counter, totaldist);
         }
 
@@ -729,11 +737,12 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 fn helpdisp() {
     println!("{}", "Search Function".yellow().bold());
     println!("Enter single term to use search function.");
+    println!("{} {}{}", "If a facility has an FAA LID, but not an ICAO code, the FAA LID will be shown in", "yellow".yellow(), ".");
     println!("");
     println!("{}", "Flight Distance Function".yellow().bold());
     println!("Enter terms separated by hyphens ('{}').", "-".cyan());
     println!("Blocks of terms can be delimited with semicolons ('{}').", ";".cyan());
-    println!("{} '{}'", "Example:", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL".cyan());
+    println!("{} '{}'", "Example:", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL-S60".cyan());
     println!("");
     println!("{}", "Term Formatting".yellow().bold());
     println!("Acceptable term formats in order of accuracy (highest to lowest):");
@@ -758,8 +767,16 @@ fn helpdisp() {
     println!("");
 }
 
-fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>){
+fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>, latestversion: &str){
     println!("{}{}", "FlightDist v".yellow(), version.yellow());
+    let latestversionunwrapped = Version::from(&latestversion).unwrap();
+    let versionunwrapped = Version::from(version).unwrap();
+    if versionunwrapped == latestversionunwrapped {
+        println!("This is the latest version.")
+    }
+    else if versionunwrapped < latestversionunwrapped {
+        println!("{}{}{} {}{} {}", "There's a new version of FlightDist (", latestversion.yellow(), ") available", "here".hyperlink("https://github.com/heeshung/FlightDist/releases/latest").cyan().bold(), "!", "(Ctrl + click to follow link.)");
+    }
     println!("");
     println!("Included facility types: {:?}", factypes);
     println!("{} facilities loaded.", airports_len.to_string().green());
@@ -773,6 +790,21 @@ fn paddingsafety(padding: usize, default: usize) -> usize {
     else {
         return 0;
     }
+}
+
+#[tokio::main]
+async fn versioncheck() -> Result<String, Box<dyn std::error::Error>> {
+    let client = reqwest::Client::new();
+    let resp = client
+        .get("https://api.github.com/repos/heeshung/FlightDist/releases/latest")
+        .header(USER_AGENT, "FlightDist")
+        .header("accept", "application/vnd.github+json")
+        .send()
+        .await?
+        .json::<Response>()
+        .await?;
+
+    Ok(resp.tag_name)
 }
 
 fn main() {
@@ -821,6 +853,15 @@ fn main() {
     let mut history = BasicHistory::new();
 
     println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
+    
+    //check if latest version
+    let latestversion = versioncheck().unwrap_or("".to_string());
+    let latestversionunwrapped = Version::from(&latestversion).unwrap();
+    let versionunwrapped = Version::from(version).unwrap();
+    if versionunwrapped < latestversionunwrapped {
+        println!("{}{}{} {}{} {}", "There's a new version of FlightDist (", latestversion.yellow(), ") available", "here".hyperlink("https://github.com/heeshung/FlightDist/releases/latest").cyan().bold(), "!", "(Ctrl + click to follow link.)");
+    }
+
     println!("For help, type '{}'.", "help".cyan());
     println!("");
 
@@ -836,7 +877,7 @@ fn main() {
         let mut grtotaldist: f64 = 0.0;
 
         for args in &splitargcollection {
-            let result = queryhandler(&airports, unit, version, &factypes, args.to_string(), argcounter, splitargcollection.len());
+            let result = queryhandler(&airports, unit, version, &factypes, args.to_string(), argcounter, splitargcollection.len(), &latestversion);
 
             //increment argcounter
             argcounter += 1;
