@@ -6,7 +6,7 @@ Windows: Download and unzip release, run FlightDist.
 
 ### Search Function
 Enter single term to use search function.
-If a facility has an FAA LID, but not an ICAO code, the FAA LID will be shown in yellow.
+If a facility has an FAA LID, but not an ICAO code, the FAA LID will be shown in place of the ICAO code in yellow.
 
 ### Flight Distance Function
 Enter terms separated by hyphens ('-').
