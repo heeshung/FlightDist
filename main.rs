@@ -1,10 +1,12 @@
 use serde::{Deserialize};
 use std::fs;
+use std::process::Command;
 use geoutils::Location;
 use colored::Colorize;
 use dialoguer::{Input, BasicHistory};
 use unidecode::unidecode;
 use reqwest::header::USER_AGENT;
+use reqwest::header::ACCEPT;
 use version_compare::Version;
 
 #[derive(Debug, Deserialize)]
@@ -69,9 +71,14 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
             update(version).unwrap_or_else(|error| {
                 eprintln!("Error: {}", error);
                 eprintln!("{}", "Update failed!".red().bold());
-            });
-            println!("");
-            press_btn_continue::wait("FlightDist will now exit. Press any key to continue...").unwrap();
+                eprintln!("");
+                #[cfg(target_os = "windows")] {
+                    press_btn_continue::wait("FlightDist will now exit. Press any key to continue...").unwrap();
+                }
+                #[cfg(not(target_os = "windows"))] {
+                    println!("FlightDist will now exit.");
+                }
+            });            
             return (1, counter, totaldist);
         }
 
@@ -809,7 +816,7 @@ async fn versioncheck() -> Result<String, Box<dyn std::error::Error>> {
     let resp = client
         .get("https://api.github.com/repos/heeshung/FlightDist/releases/latest")
         .header(USER_AGENT, "FlightDist")
-        .header("accept", "application/vnd.github+json")
+        .header(ACCEPT, "application/vnd.github+json")
         .send()
         .await?
         .json::<Response>()
@@ -828,6 +835,49 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
         .build()?
         .update()?;
     println!("Update status: `{}`!", status.version());
+
+    let releases = self_update::backends::github::ReleaseList::configure()
+        .repo_owner("heeshung")
+        .repo_name("FlightDist")
+        .build()?
+        .fetch()?;
+
+    println!("Updating airport and facility data...");
+    // get the first available release
+    let asset = releases[0]
+        .asset_for(&self_update::get_target(), None)
+        .unwrap();
+
+    let tmp_dir = tempfile::Builder::new()
+            .prefix("FlightDist")
+            .tempdir_in(::std::env::current_dir()?)?;
+
+    let tmp_zip_path = tmp_dir.path().join(&asset.name);
+    let file = ::std::fs::File::create(&tmp_zip_path)?;
+   
+    self_update::Download::from_url(&asset.download_url)
+        .set_header(USER_AGENT, "FlightDist".parse()?)
+        .set_header(ACCEPT, "application/octet-stream".parse()?)
+        .download_to(&file)?;
+
+    let resource_name = std::path::PathBuf::from("airports.csv");
+    self_update::Extract::from_source(&tmp_zip_path)
+        .archive(self_update::ArchiveKind::Zip)
+        .extract_file(&tmp_dir.path(), &resource_name)?;
+
+    let new_resource = tmp_dir.path().join(&resource_name);
+    println!("{:?}", fs::rename(&new_resource, ::std::env::current_dir()?.join(&resource_name)));
+
+    #[cfg(target_os = "windows")] {
+        let exe_path = std::env::current_dir().unwrap().join("FlightDist.exe");
+        Command::new("cmd").args(&["/C", "start", "", exe_path.to_str().unwrap()]).spawn().expect("Failed to start FlightDist, please relaunch manually.");
+        press_btn_continue::wait("Press any key to continue...").unwrap();
+    }
+
+    #[cfg(not(target_os = "windows"))] {
+        println!("FlightDist will now exit.");
+    }
+
     Ok(())
 }
 
