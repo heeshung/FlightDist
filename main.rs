@@ -871,7 +871,6 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "windows")] {
         let exe_path = std::env::current_dir().unwrap().join("FlightDist.exe");
         Command::new("cmd").args(&["/C", "start", "", exe_path.to_str().unwrap()]).spawn().expect("Failed to start FlightDist, please relaunch manually.");
-        press_btn_continue::wait("Press any key to continue...").unwrap();
     }
 
     #[cfg(not(target_os = "windows"))] {
