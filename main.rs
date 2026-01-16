@@ -78,7 +78,10 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                     #[cfg(target_os = "windows")] {
                         press_btn_continue::wait("FlightDist will now exit. Press any key to continue...").unwrap();
                     }
-                });            
+                });
+                #[cfg(not(target_os = "windows"))] {
+                    println!("FlightDist will now exit.");
+                }
                 return (1, counter, totaldist);
             }
             else {
@@ -862,10 +865,6 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "windows")] {
         let exe_path = std::env::current_dir().unwrap().join("FlightDist.exe");
         Command::new("cmd").args(&["/C", "start", "", exe_path.to_str().unwrap()]).spawn().expect("Failed to start FlightDist, please relaunch manually.");
-    }
-
-    #[cfg(not(target_os = "windows"))] {
-        println!("FlightDist will now exit.");
     }
 
     Ok(())
