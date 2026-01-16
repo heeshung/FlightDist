@@ -1,4 +1,4 @@
-/target
-/flightdist binaries
+target/
+flightdist binaries/
 Cargo.lock
 main
