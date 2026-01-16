@@ -68,18 +68,27 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
 
         //check if update
         else if queries[0].to_ascii_lowercase() == "update" {
-            update(version).unwrap_or_else(|error| {
-                eprintln!("Error: {}", error);
-                eprintln!("{}", "Update failed!".red().bold());
-                eprintln!("");
-                #[cfg(target_os = "windows")] {
-                    press_btn_continue::wait("FlightDist will now exit. Press any key to continue...").unwrap();
-                }
-                #[cfg(not(target_os = "windows"))] {
-                    println!("FlightDist will now exit.");
-                }
-            });            
-            return (1, counter, totaldist);
+            let latestversionunwrapped = Version::from(&latestversion).unwrap();
+            let versionunwrapped = Version::from(version).unwrap();
+            if versionunwrapped < latestversionunwrapped {
+                update(version).unwrap_or_else(|error| {
+                    eprintln!("Error: {}", error);
+                    eprintln!("{}", "Update failed!".red().bold());
+                    eprintln!("");
+                    #[cfg(target_os = "windows")] {
+                        press_btn_continue::wait("FlightDist will now exit. Press any key to continue...").unwrap();
+                    }
+                    #[cfg(not(target_os = "windows"))] {
+                        println!("FlightDist will now exit.");
+                    }
+                });            
+                return (1, counter, totaldist);
+            }
+            else {
+                println!("This is the latest version.");
+                println!("");
+                return (5, counter, totaldist);
+            }
         }
 
         //check if about
@@ -810,21 +819,6 @@ fn paddingsafety(padding: usize, default: usize) -> usize {
     }
 }
 
-#[tokio::main]
-async fn versioncheck() -> Result<String, Box<dyn std::error::Error>> {
-    let client = reqwest::Client::new();
-    let resp = client
-        .get("https://api.github.com/repos/heeshung/FlightDist/releases/latest")
-        .header(USER_AGENT, "FlightDist")
-        .header(ACCEPT, "application/vnd.github+json")
-        .send()
-        .await?
-        .json::<Response>()
-        .await?;
-
-    Ok(resp.tag_name)
-}
-
 fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     let status = self_update::backends::github::Update::configure()
         .repo_owner("heeshung")
@@ -878,6 +872,21 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ok(())
+}
+
+#[tokio::main]
+async fn versioncheck() -> Result<String, Box<dyn std::error::Error>> {
+    let client = reqwest::Client::new();
+    let resp = client
+        .get("https://api.github.com/repos/heeshung/FlightDist/releases/latest")
+        .header(USER_AGENT, "FlightDist")
+        .header(ACCEPT, "application/vnd.github+json")
+        .send()
+        .await?
+        .json::<Response>()
+        .await?;
+
+    Ok(resp.tag_name)
 }
 
 fn main() {
