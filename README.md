@@ -1,18 +1,23 @@
 # FlightDist
+
 FlightDist is a versatile and fast flight distance calculator.
 
 ## Usage
-Windows: Download and unzip release, run FlightDist.
+
+**Windows/Linux**: Download the appropriate binary release, unzip, and run FlightDist.
 
 ### Search Function
+
 Enter single term to use search function.
 
 ### Flight Distance Function
-Enter terms separated by hyphens ('-').
-Blocks of terms can be delimited with semicolons (';').
+
+Enter terms separated by hyphens ('-').<br>
+Blocks of terms can be delimited with semicolons (';').<br>
 If a facility has an FAA LID, but not an ICAO code, the FAA LID will be shown in place of the ICAO code in yellow.
 
 ### Term Formatting
+
 Acceptable term formats in order of accuracy (highest to lowest):
 - ICAO Code: ```KABE```
 - IATA Code: ```ABE```
@@ -23,9 +28,11 @@ Acceptable term formats in order of accuracy (highest to lowest):
 - City Only: ```Allentown```
 
 ### Navigation
+
 Use up/down arrow to recall and navigate through past searches or queries.
 
 ### Commands
+
 - ```help```: Display help screen.
 - ```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
 - ```update```: Update FlightDist.
@@ -33,6 +40,7 @@ Use up/down arrow to recall and navigate through past searches or queries.
 - ```exit```: Exits FlightDist.
 
 ## Flight Distance Example
+
 ```
 :: HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL-S60
 
@@ -54,6 +62,7 @@ Total:     4 flights                                                            
 ```
 
 ## Search Example
+
 ```
 :: ams
 
@@ -70,3 +79,5 @@ Latitude: 52.308601
 Longitude: 4.76389
 Elevation: -11 ft
 ```
+
+Plane icon by Icons8
