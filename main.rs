@@ -8,6 +8,8 @@ use unidecode::unidecode;
 use reqwest::header::USER_AGENT;
 use reqwest::header::ACCEPT;
 use version_compare::Version;
+use rand::Rng;
+use terminal_hyperlink::Hyperlink;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -117,6 +119,13 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
                 return (5, counter, totaldist);
             }
         }
+
+        //check if rand
+        if queries[0].to_ascii_lowercase() == "rand" {
+            randomairport(airports);
+            return (5, counter, totaldist);
+        }
+
         //check for single flag (search function)
         else if (queries.len() == 1) && (argslen == 1){
             airportsearch(&queries[0], airports);
@@ -742,6 +751,34 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
     println!("");
 }
 
+fn randomairport(airports: &Vec<&Airport>) {
+    let num = rand::rng().random_range(0..airports.len());
+    println!("");
+    println!("{}", "Airport Information".blue().bold());
+    println!("-------------------");
+    println!("{} {}", "Airport Name:".yellow(), &airports[num].name);
+    println!("{} {}", "IATA Code:".yellow(), &airports[num].iata_code);
+    println!("{} {}", "ICAO Code:".yellow(), &airports[num].icao_code);
+    println!("{} {}", "Local ID/FAA LID:".yellow(), &airports[num].local_code);
+    println!("{} {}", "City:".yellow(), &airports[num].municipality);
+    println!("{} {}", "State:".yellow(), &airports[num].iso_region);
+    println!("{} {}", "Country:".yellow(), &airports[num].iso_country);
+    println!("{} {}", "Latitude:".yellow(), airports[num].latitude_deg);
+    println!("{} {}", "Longitude:".yellow(), airports[num].longitude_deg);
+
+    //handle blank elevations
+    let elevationfinal = airports[num].elevation_ft.unwrap_or(-9999999);
+    if elevationfinal == -9999999 {
+        println!("{} ", "Elevation:".yellow());
+    }
+    else {
+        println!("{} {} {}", "Elevation:".yellow(), elevationfinal, "ft");
+    }
+    println!("");
+    println!("{}", "See location on Google Maps.".hyperlink(format!("{}{}{}{}", "https://www.google.com/maps/search/?api=1&query=", airports[num].latitude_deg, "%2C", airports[num].longitude_deg)).cyan().bold());
+    println!("");
+}
+
 fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f64 {
     //calculate distance
     let origin = Location::new(lathold, lonhold);
@@ -788,6 +825,7 @@ fn helpdisp() {
     println!("{}", "Commands".yellow().bold());
     println!("'{}'{}", "help".cyan(), ": Display this help screen.");
     println!("'{}'/'{}'/'{}'{}", "unit=mi".cyan(), "unit=km".cyan(), "unit=nm".cyan(), ": Set units for miles, kilometers, or nautical miles.");
+    println!("'{}'{}", "rand".cyan(), ": Find a random facility.");
     println!("'{}'{}", "update".cyan(), ": Update FlightDist.");
     println!("'{}'{}", "about".cyan(), ": Display about screen.");
     println!("'{}'{}", "exit".cyan(), ": Exits FlightDist.");
