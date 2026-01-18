@@ -35,7 +35,7 @@ Use up/down arrow to recall and navigate through past searches or queries.
 
 - ```help```: Display help screen.
 - ```unit=mi```/```unit=km```/```unit=nm```: Set units for miles, kilometers, or nautical miles.
-- ```rand```: Find a random facility.
+- ```random```: Find a random facility.
 - ```update```: Update FlightDist.
 - ```about```: Display about screen.
 - ```exit```: Exits FlightDist.

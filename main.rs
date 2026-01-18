@@ -121,7 +121,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
         }
 
         //check if rand
-        if queries[0].to_ascii_lowercase() == "rand" {
+        if queries[0].to_ascii_lowercase() == "random" {
             randomairport(airports);
             return (5, counter, totaldist);
         }
@@ -829,7 +829,7 @@ fn helpdisp() {
     println!("{}", "Commands".yellow().bold());
     println!("'{}'{}", "help".cyan(), ": Display this help screen.");
     println!("'{}'/'{}'/'{}'{}", "unit=mi".cyan(), "unit=km".cyan(), "unit=nm".cyan(), ": Set units for miles, kilometers, or nautical miles.");
-    println!("'{}'{}", "rand".cyan(), ": Find a random facility.");
+    println!("'{}'{}", "random".cyan(), ": Find a random facility.");
     println!("'{}'{}", "update".cyan(), ": Update FlightDist.");
     println!("'{}'{}", "about".cyan(), ": Display about screen.");
     println!("'{}'{}", "exit".cyan(), ": Exits FlightDist.");
