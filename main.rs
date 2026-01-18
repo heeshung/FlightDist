@@ -743,6 +743,10 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
             else {
                 println!("{} {} {}", "Elevation:".yellow(), elevationfinal, "ft");
             }
+
+            println!("");
+            println!("{}", "See location on Google Maps".hyperlink(format!("{}{}{}{}", "https://www.google.com/maps/search/?api=1&query=", lat, "%2C", lon)).cyan().bold());
+
         }
         else {
             println!("'{}' {}", query.cyan(), "could not be found.");
