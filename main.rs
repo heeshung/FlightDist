@@ -775,7 +775,7 @@ fn randomairport(airports: &Vec<&Airport>) {
         println!("{} {} {}", "Elevation:".yellow(), elevationfinal, "ft");
     }
     println!("");
-    println!("{}", "See location on Google Maps.".hyperlink(format!("{}{}{}{}", "https://www.google.com/maps/search/?api=1&query=", airports[num].latitude_deg, "%2C", airports[num].longitude_deg)).cyan().bold());
+    println!("{}", "See location on Google Maps".hyperlink(format!("{}{}{}{}", "https://www.google.com/maps/search/?api=1&query=", airports[num].latitude_deg, "%2C", airports[num].longitude_deg)).cyan().bold());
     println!("");
 }
 
