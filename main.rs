@@ -462,7 +462,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
             let paddingiata = paddingsafety(airportiata.chars().count(), 3);
             let paddingicaofaa = paddingsafety(airporticao.chars().count()+airportfaa.chars().count(), 4);
             let paddingname = paddingsafety(airportname.chars().count()+state.chars().count()+statesuffix.chars().count(), 77);
-            println!("{:>paddingiata$}/{:>paddingicaofaa$}{} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportfaa.yellow(), airportname, airportnametrail, state.purple(), statesuffix.purple(), airportcountry.purple(), distance, unit, totaldist, unit);
+            println!("{:>paddingiata$}/{:>paddingicaofaa$}{} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", airportiata.green(), airporticao.green(), airportfaa.yellow(), airportname, airportnametrail, state.purple().bold(), statesuffix.purple().bold(), airportcountry.purple().bold(), distance, unit, totaldist, unit);
         }
         else {
             //truncate query if too long
