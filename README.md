@@ -8,17 +8,17 @@ FlightDist is a versatile and fast flight distance calculator.
 
 ### Search Function
 
-Enter single term to use search function.
+Enter single search term to use search function.
 
 ### Flight Distance Function
 
-Enter terms separated by hyphens ('-').<br>
-Blocks of terms can be delimited with semicolons (';').<br>
+Enter search terms separated by hyphens (-).<br>
+Blocks of search terms can be delimited with semicolons (;).<br>
 If a facility has an FAA LID, but not an ICAO code, the FAA LID will be shown in place of the ICAO code in yellow.
 
-### Term Formatting
+### Search Term Formatting
 
-Acceptable term formats in order of accuracy (highest to lowest):
+Acceptable search term formats in order of accuracy (highest to lowest):
 - ICAO Code: ```KABE```
 - IATA Code: ```ABE```
 - FAA LID: ```ABE```
@@ -26,6 +26,8 @@ Acceptable term formats in order of accuracy (highest to lowest):
 - City, State Name: ```Allentown, PA```
 - City, Country Code: ```Allentown, US```
 - City Only: ```Allentown```
+
+Search terms can be wrapped in double quotes to perform a literal search (e.g. ```"Wilkes-Barre, PA"```).
 
 ### Navigation
 

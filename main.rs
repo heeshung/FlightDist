@@ -10,6 +10,7 @@ use reqwest::header::ACCEPT;
 use version_compare::Version;
 use rand::Rng;
 use terminal_hyperlink::Hyperlink;
+use splitty::*;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -53,7 +54,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     let mut queries: Vec<String> = vec![];
 
     //split for space delimiter
-    let splitspaceargs = unwrappedargs.split("-");
+    let splitspaceargs = split_unquoted_char(&unwrappedargs, '-').unwrap_quotes(true);
 
     let collection = splitspaceargs.collect::<Vec<&str>>();
     for args in collection {
@@ -144,7 +145,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
         airportfound = false;
         //check if empty term
         if query.trim().len() == 0 {
-            println!("Empty term.");
+            println!("Empty search term.");
             continue;
         }
         //search icaos
@@ -475,7 +476,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
             else{
                 queryname = &query;
             }
-            println!("'{}{}' {}", queryname.cyan(), querytrail.cyan(), "could not be found.");
+            println!("{}{} {}", queryname.cyan(), querytrail.cyan(), "could not be found.");
         }
     }
     //only print if more than one subtotal
@@ -527,7 +528,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
 
     //check if empty term
     if query.trim().len() == 0 {
-        println!("Empty term.");
+        println!("Empty search term.");
     }
 
     else {
@@ -749,7 +750,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>) {
 
         }
         else {
-            println!("'{}' {}", query.cyan(), "could not be found.");
+            println!("{} {}", query.cyan(), "could not be found.");
         }
     }
     println!("");
@@ -803,36 +804,38 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 
 fn helpdisp() {
     println!("{}", "Search Function".yellow().bold());
-    println!("Enter single term to use search function.");
+    println!("Enter single search term to use search function.");
     println!("");
     println!("{}", "Flight Distance Function".yellow().bold());
-    println!("Enter terms separated by hyphens ('{}').", "-".cyan());
-    println!("Blocks of terms can be delimited with semicolons ('{}').", ";".cyan());
+    println!("Enter search terms separated by hyphens ({}).", "-".cyan());
+    println!("Blocks of search terms can be delimited with semicolons ({}).", ";".cyan());
     println!("{} {} {}{}", "If a facility has an FAA LID, but not an ICAO code,", "the FAA LID will be shown in place of the ICAO code in".bold(), "yellow".yellow(), ".");
-    println!("{} '{}'", "Example:", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL-S60".cyan());
+    println!("{} {}", "Example:", "HND-KSEA-o'hare;Cape Town, ZA-Fort Lauderdale, FL-S60".cyan());
     println!("");
-    println!("{}", "Term Formatting".yellow().bold());
-    println!("Acceptable term formats in order of accuracy (highest to lowest):");
-    println!("{} '{}'", "-ICAO Code:", "KABE".cyan());
-    println!("{} '{}'", "-IATA Code:", "ABE".cyan());
-    println!("{} '{}'", "-FAA LID:", "ABE".cyan());
-    println!("{} '{}'", "-Airport Name:", "Lehigh Valley International".cyan());
-    println!("{} '{}'", "-Airport Name, State Code:", "Lehigh Valley International, PA".cyan());
-    println!("{} '{}'", "-Airport Name, Country Code:", "Lehigh Valley International, US".cyan());
-    println!("{} '{}'", "-City, State Code:", "Allentown, PA".cyan());
-    println!("{} '{}'", "-City, Country Code:", "Allentown, US".cyan());
-    println!("{} '{}'", "-City Only:", "Allentown".cyan());
+    println!("{}", "Search Term Formatting".yellow().bold());
+    println!("Acceptable search term formats in order of accuracy (highest to lowest):");
+    println!("{} {}", "-ICAO Code:", "KABE".cyan());
+    println!("{} {}", "-IATA Code:", "ABE".cyan());
+    println!("{} {}", "-FAA LID:", "ABE".cyan());
+    println!("{} {}", "-Airport Name:", "Lehigh Valley International".cyan());
+    println!("{} {}", "-Airport Name, State Code:", "Lehigh Valley International, PA".cyan());
+    println!("{} {}", "-Airport Name, Country Code:", "Lehigh Valley International, US".cyan());
+    println!("{} {}", "-City, State Code:", "Allentown, PA".cyan());
+    println!("{} {}", "-City, Country Code:", "Allentown, US".cyan());
+    println!("{} {}", "-City Only:", "Allentown".cyan());
+    println!("");
+    println!("{}{}{}", "Search terms can be wrapped in double quotes to perform a literal search (e.g. ", r#""Wilkes-Barre, PA""#.cyan(), ").");
     println!("");
     println!("{}", "Navigation".yellow().bold());
     println!("Use up/down arrow to recall and navigate through past searches or queries.");
     println!("");
     println!("{}", "Commands".yellow().bold());
-    println!("'{}'{}", "help".cyan(), ": Display this help screen.");
-    println!("'{}'/'{}'/'{}'{}", "unit=mi".cyan(), "unit=km".cyan(), "unit=nm".cyan(), ": Set units for miles, kilometers, or nautical miles.");
-    println!("'{}'{}", "random".cyan(), ": Find a random facility.");
-    println!("'{}'{}", "update".cyan(), ": Update FlightDist.");
-    println!("'{}'{}", "about".cyan(), ": Display about screen.");
-    println!("'{}'{}", "exit".cyan(), ": Exits FlightDist.");
+    println!("{}{}", "help".cyan(), ": Display this help screen.");
+    println!("{}/{}/{}{}", "unit=mi".cyan(), "unit=km".cyan(), "unit=nm".cyan(), ": Set units for miles, kilometers, or nautical miles.");
+    println!("{}{}", "random".cyan(), ": Find a random facility.");
+    println!("{}{}", "update".cyan(), ": Update FlightDist.");
+    println!("{}{}", "about".cyan(), ": Display about screen.");
+    println!("{}{}", "exit".cyan(), ": Exits FlightDist.");
     println!("");
 }
 
@@ -844,7 +847,7 @@ fn aboutdisp(airports_len: usize, version: &str, factypes: &Vec<&str>, latestver
         println!("This is the latest version.")
     }
     else if versionunwrapped < latestversionunwrapped {
-        println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type '", "update".cyan(), "'.");
+        println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type ", "update".cyan(), ".");
     }
     println!("");
     println!("Included facility types: {:?}", factypes);
@@ -979,15 +982,15 @@ fn main() {
     let latestversionunwrapped = Version::from(&latestversion).unwrap();
     let versionunwrapped = Version::from(version).unwrap();
     if versionunwrapped < latestversionunwrapped {
-        println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type '", "update".cyan(), "'.");
+        println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type ", "update".cyan(), ".");
     }
 
-    println!("For help, type '{}'.", "help".cyan());
+    println!("For help, type {}.", "help".cyan());
     println!("");
 
     loop {
         let unwrappedargs: String = Input::new().with_prompt(":").history_with(&mut history).interact_text().unwrap();
-        let splitargs = unwrappedargs.split(";");
+        let splitargs = split_unquoted_char(&unwrappedargs, ';').unwrap_quotes(false);
         let splitargcollection = splitargs.collect::<Vec<&str>>();
         
         //arg index
