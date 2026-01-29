@@ -14,7 +14,7 @@ use splitty::*;
 
 #[derive(Debug, Deserialize)]
 struct Airport {
-    facility: String,
+    r#type: String,
     name: String,
     latitude_deg: f64,
     longitude_deg: f64,
@@ -956,7 +956,7 @@ fn main() {
         let mut factempholdyesicao: Vec<&Airport> = vec![];
         let mut factempholdnoicao: Vec<&Airport> = vec![];
         for airport in &unsortedairports {
-            if airport.facility == factype.to_string() {
+            if airport.r#type == factype.to_string() {
                 if airport.icao_code != "" {
                     factempholdyesicao.push(airport);
                 }
