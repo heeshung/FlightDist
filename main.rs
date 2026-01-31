@@ -64,6 +64,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     //return if queries are blank (only hyphens in input)
     if queries.len() == 0 {
         println!("Invalid input.");
+        println!("");
         return (5, counter, totaldist);
     }
 
