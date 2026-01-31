@@ -53,12 +53,18 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
 
     let mut queries: Vec<String> = vec![];
 
-    //split for space delimiter
+    //split for hyphen delimiter
     let splitspaceargs = split_unquoted_char(&unwrappedargs, '-').unwrap_quotes(true);
 
     let collection = splitspaceargs.collect::<Vec<&str>>();
     for args in collection {
         queries.push(args.to_string());
+    }
+
+    //return if queries are blank (only hyphens in input)
+    if queries.len() == 0 {
+        println!("Invalid input.");
+        return (5, counter, totaldist);
     }
 
     //only run if first iteration
@@ -479,10 +485,6 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
             println!("{}{} {}", queryname.cyan(), querytrail.cyan(), "could not be found.");
         }
     }
-    //only print if more than one subtotal
-    if argslen > 1 {
-        println!("----------------------------------------------------------------------------------------------------------------------");
-    }
 
     //remove first airport from counter
     if counter > 0 {
@@ -496,6 +498,7 @@ fn queryhandler(airports: &Vec<&Airport>, unit: &str, version: &str, factypes: &
     let totalformat = format!("{:.1}", totaldist);
     //only print if more than one subtotal
     if argslen > 1 {
+        println!("----------------------------------------------------------------------------------------------------------------------");
         if counter > 0 {
             println!("{}  {} {}{:>paddingcounter$} {}", "Subtotal:".yellow(), counter.to_string().cyan(), countersuffix, totalformat.to_string().cyan(), unit);
         }
