@@ -4,7 +4,7 @@ FlightDist is a versatile and fast flight distance calculator.
 
 ## Usage
 
-**Windows/Linux**: Download the appropriate binary release, unzip, and run FlightDist.
+**Windows/Linux**: Download the appropriate binary release, unzip, and run FlightDist.<br>
 **Note: Versions _before_ v1.7.0 cannot use the ```update``` function due to a new directory structure.  Please manually download and install v1.7.0 or later if coming from 1.6.13 or earlier.**
 
 ### Search Function
