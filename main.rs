@@ -152,7 +152,7 @@ fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, ver
 
         //check if rand
         if queries[0].to_ascii_lowercase() == "random" {
-            randomairport(airports);
+            randomairport(airports, runways);
             return (5, counter, totaldist);
         }
 
@@ -620,47 +620,7 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>, runways: &Vec<Runway>
             }
         }
         if airportfound == true {
-            println!("");
-            println!("{}", "Airport Information".blue().bold());
-            println!("-------------------");
-            println!("{} {}", "Airport Name:".yellow(), foundairport.name);
-            println!("{} {}", "IATA Code:".yellow(), foundairport.iata_code);
-            println!("{} {}", "ICAO Code:".yellow(), foundairport.icao_code);
-            println!("{} {}", "Local ID/FAA LID:".yellow(), foundairport.local_code);
-            println!("{} {}", "City:".yellow(), foundairport.municipality);
-            println!("{} {}", "State:".yellow(), foundairport.iso_region);
-            println!("{} {}", "Country:".yellow(), foundairport.iso_country);
-            println!("{} {}", "Latitude:".yellow(), foundairport.latitude_deg);
-            println!("{} {}", "Longitude:".yellow(), foundairport.longitude_deg);
-
-            //handle blank elevations
-            let elevationfinal = foundairport.elevation_ft.unwrap_or(-9999999);
-            if elevationfinal == -9999999 {
-                println!("{} ", "Elevation:".yellow());
-            }
-            else {
-                println!("{} {} {}", "Elevation:".yellow(), elevationfinal, "ft");
-            }
-
-            //find runways
-            let mut runwaycount: i8 = 0;
-            for runway in runways {
-                if runway.airport_ident == foundairport.ident {
-                    //ensure runway is not closed
-                    if runway.closed == 0 {
-                        //print runways label if first found
-                        if runwaycount == 0 {
-                            println!("");
-                            println!("{}", "Runways:".yellow());
-                        }
-                        println!("[{}/{}] - {} x {} ft", runway.le_ident.green().bold(), runway.he_ident.green().bold(), runway.length_ft, runway.width_ft);
-                        runwaycount += 1;
-                    }
-                }
-            }
-            println!("");
-            println!("{}", "See location on Google Maps".hyperlink(format!("{}{}{}{}", "https://www.google.com/maps/search/?api=1&query=", foundairport.latitude_deg, "%2C", foundairport.longitude_deg)).cyan().bold());
-
+            airportinfo(foundairport, runways);
         }
         else {
             println!("{} {}", query.cyan(), "could not be found.");
@@ -669,32 +629,53 @@ fn airportsearch(query: &String, airports: &Vec<&Airport>, runways: &Vec<Runway>
     println!("");
 }
 
-fn randomairport(airports: &Vec<&Airport>) {
+fn randomairport(airports: &Vec<&Airport>, runways: &Vec<Runway>) {
     let num = rand::rng().random_range(0..airports.len());
+    airportinfo(airports[num], runways);
+    println!("");
+}
+
+fn airportinfo(airport: &Airport, runways: &Vec<Runway>) {
     println!("");
     println!("{}", "Airport Information".blue().bold());
     println!("-------------------");
-    println!("{} {}", "Airport Name:".yellow(), &airports[num].name);
-    println!("{} {}", "IATA Code:".yellow(), &airports[num].iata_code);
-    println!("{} {}", "ICAO Code:".yellow(), &airports[num].icao_code);
-    println!("{} {}", "Local ID/FAA LID:".yellow(), &airports[num].local_code);
-    println!("{} {}", "City:".yellow(), &airports[num].municipality);
-    println!("{} {}", "State:".yellow(), &airports[num].iso_region);
-    println!("{} {}", "Country:".yellow(), &airports[num].iso_country);
-    println!("{} {}", "Latitude:".yellow(), airports[num].latitude_deg);
-    println!("{} {}", "Longitude:".yellow(), airports[num].longitude_deg);
+    println!("{} {}", "Airport Name:".yellow(), airport.name);
+    println!("{} {}", "IATA Code:".yellow(), airport.iata_code);
+    println!("{} {}", "ICAO Code:".yellow(), airport.icao_code);
+    println!("{} {}", "Local ID/FAA LID:".yellow(), airport.local_code);
+    println!("{} {}", "City:".yellow(), airport.municipality);
+    println!("{} {}", "State:".yellow(), airport.iso_region);
+    println!("{} {}", "Country:".yellow(), airport.iso_country);
+    println!("{} {}", "Latitude:".yellow(), airport.latitude_deg);
+    println!("{} {}", "Longitude:".yellow(), airport.longitude_deg);
 
     //handle blank elevations
-    let elevationfinal = airports[num].elevation_ft.unwrap_or(-9999999);
+    let elevationfinal = airport.elevation_ft.unwrap_or(-9999999);
     if elevationfinal == -9999999 {
         println!("{} ", "Elevation:".yellow());
     }
     else {
         println!("{} {} {}", "Elevation:".yellow(), elevationfinal, "ft");
     }
+
+    //find runways
+    let mut runwaycount: i8 = 0;
+    for runway in runways {
+        if runway.airport_ident == airport.ident {
+            //ensure runway is not closed
+            if runway.closed == 0 {
+                //print runways label if first found
+                if runwaycount == 0 {
+                    println!("");
+                    println!("{}", "Runways:".yellow());
+                }
+                println!("[{}/{}] - {} x {} ft", runway.le_ident.green().bold(), runway.he_ident.green().bold(), runway.length_ft, runway.width_ft);
+                runwaycount += 1;
+            }
+        }
+    }
     println!("");
-    println!("{}", "See location on Google Maps".hyperlink(format!("{}{}{}{}", "https://www.google.com/maps/search/?api=1&query=", airports[num].latitude_deg, "%2C", airports[num].longitude_deg)).cyan().bold());
-    println!("");
+    println!("{}", "See location on Google Maps".hyperlink(format!("{}{}{}{}", "https://www.google.com/maps/search/?api=1&query=", airport.latitude_deg, "%2C", airport.longitude_deg)).cyan().bold());
 }
 
 fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f64 {
