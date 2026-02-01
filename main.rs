@@ -813,7 +813,7 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
         .set_header(ACCEPT, "application/octet-stream".parse()?)
         .download_to(&file)?;
 
-    let resource_name = std::path::PathBuf::from("assets/");
+    let resource_name = std::path::PathBuf::from("assets");
     self_update::Extract::from_source(&tmp_zip_path)
         .archive(self_update::ArchiveKind::Zip)
         .extract_file(&tmp_dir.path(), &resource_name)?;
