@@ -813,13 +813,22 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
         .set_header(ACCEPT, "application/octet-stream".parse()?)
         .download_to(&file)?;
 
-    let resource_name = std::path::PathBuf::from("assets");
+    let airports_resource_name = std::path::PathBuf::from("assets/airports.csv");
+    let runways_resource_name = std::path::PathBuf::from("assets/runways.csv");
+
     self_update::Extract::from_source(&tmp_zip_path)
         .archive(self_update::ArchiveKind::Zip)
-        .extract_into(&tmp_dir.path())?;
+        .extract_file(&tmp_dir.path(), &airports_resource_name)?;
 
-    let new_resource = tmp_dir.path().join(&resource_name);
-    println!("{:?}", fs::rename(&new_resource, ::std::env::current_dir()?.join(&resource_name)));
+    self_update::Extract::from_source(&tmp_zip_path)
+        .archive(self_update::ArchiveKind::Zip)
+        .extract_file(&tmp_dir.path(), &runways_resource_name)?;
+
+    let new_airports_resource = tmp_dir.path().join(&airports_resource_name);
+    let new_runways_resource = tmp_dir.path().join(&runways_resource_name);
+
+    println!("{:?}", fs::rename(&new_airports_resource, ::std::env::current_dir()?.join(&airports_resource_name)));
+    println!("{:?}", fs::rename(&new_runways_resource, ::std::env::current_dir()?.join(&runways_resource_name)));
 
     #[cfg(target_os = "windows")] {
         let exe_path = std::env::current_dir().unwrap().join("FlightDist.exe");
