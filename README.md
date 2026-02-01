@@ -81,6 +81,14 @@ Country: NL
 Latitude: 52.308601
 Longitude: 4.76389
 Elevation: -11 ft
+
+Runways:
+[04/22] - 6627 x 148 ft
+[06/24] - 11283 x 148 ft
+[09/27] - 11329 x 148 ft
+[18C/36C] - 10826 x 148 ft
+[18L/36R] - 11155 x 148 ft
+[18R/36L] - 12467 x 198 ft
 ```
 
 Plane icon by Icons8
