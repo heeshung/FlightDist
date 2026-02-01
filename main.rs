@@ -816,7 +816,7 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     let resource_name = std::path::PathBuf::from("assets");
     self_update::Extract::from_source(&tmp_zip_path)
         .archive(self_update::ArchiveKind::Zip)
-        .extract_file(&tmp_dir.path(), &resource_name)?;
+        .extract_into(&tmp_dir.path())?;
 
     let new_resource = tmp_dir.path().join(&resource_name);
     println!("{:?}", fs::rename(&new_resource, ::std::env::current_dir()?.join(&resource_name)));
