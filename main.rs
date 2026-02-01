@@ -729,7 +729,7 @@ fn helpdisp() {
     println!("{}{}", "random".cyan(), ": Find a random facility.");
     println!("{}{}", "update".cyan(), ": Update FlightDist.");
     println!("{}{}", "about".cyan(), ": Display about screen.");
-    println!("{}{}", "exit".cyan(), ": Exits FlightDist.");
+    println!("{}{}", "exit".cyan(), ": Exit FlightDist.");
     println!("");
 }
 
