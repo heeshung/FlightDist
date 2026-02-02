@@ -898,7 +898,7 @@ fn main() {
     let mut unit = "mi";
 
     //initialize prompt history
-    let mut history = BasicHistory::new();
+    let mut history = BasicHistory::new().no_duplicates(true);
 
     println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
     
