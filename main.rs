@@ -1,6 +1,7 @@
 use serde::{Deserialize};
 use std::fs;
 use std::process::Command;
+use std::path::Path;
 use geoutils::Location;
 use colored::Colorize;
 use dialoguer::{Input, BasicHistory};
@@ -770,6 +771,11 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
         .update()?;
     println!("Update status: `{}`!", status.version());
 
+    return assetsupdate(true);
+}
+
+fn assetsupdate(relaunch: bool) -> Result<(), Box<dyn std::error::Error>> {
+
     let releases = self_update::backends::github::ReleaseList::configure()
         .repo_owner("heeshung")
         .repo_name("FlightDist")
@@ -777,7 +783,7 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
         .fetch()?;
 
     println!("Updating airport and facility data...");
-    // get the first available release
+    //get the first available release
     let asset = releases[0]
         .asset_for(&self_update::get_target(), None)
         .unwrap();
@@ -811,11 +817,12 @@ fn update(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     println!("{:?}", fs::rename(&new_airports_resource, ::std::env::current_dir()?.join(&airports_resource_name)));
     println!("{:?}", fs::rename(&new_runways_resource, ::std::env::current_dir()?.join(&runways_resource_name)));
 
-    #[cfg(target_os = "windows")] {
-        let exe_path = std::env::current_dir().unwrap().join("FlightDist.exe");
-        Command::new("cmd").args(&["/C", "start", "", exe_path.to_str().unwrap()]).spawn().expect("Failed to start FlightDist, please relaunch manually.");
+    if relaunch == true {
+        #[cfg(target_os = "windows")] {
+            let exe_path = std::env::current_dir().unwrap().join("FlightDist.exe");
+            Command::new("cmd").args(&["/C", "start", "", exe_path.to_str().unwrap()]).spawn().expect("Failed to start FlightDist, please relaunch manually.");
+        }
     }
-
     Ok(())
 }
 
@@ -842,6 +849,12 @@ fn main() {
     //read files and parse csv
     let airportfile = "assets/airports.csv";
     let runwayfile = "assets/runways.csv";
+
+    //check if assets exist
+    if (Path::new(airportfile).exists() == false) || Path::new(runwayfile).exists() == false {
+        assetsupdate(false).expect("Updating assets failed.");
+    }
+    
     let airportdata = fs::read_to_string(airportfile).expect("File Read Error");
     let runwaydata = fs::read_to_string(runwayfile).expect("File Read Error");
 
