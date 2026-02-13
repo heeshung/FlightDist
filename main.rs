@@ -850,11 +850,16 @@ fn main() {
     let airportfile = "assets/airports.csv";
     let runwayfile = "assets/runways.csv";
 
+
+    //check if assets folder exists
+    if Path::new("assets/").exists() == false {
+        fs::create_dir("assets/").expect("Assets folder creation failed.");
+    }
     //check if assets exist
     if (Path::new(airportfile).exists() == false) || Path::new(runwayfile).exists() == false {
         assetsupdate(false).expect("Updating assets failed.");
     }
-    
+
     let airportdata = fs::read_to_string(airportfile).expect("File Read Error");
     let runwaydata = fs::read_to_string(runwayfile).expect("File Read Error");
 
