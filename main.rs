@@ -853,11 +853,11 @@ fn main() {
 
     //check if assets folder exists
     if Path::new("assets/").exists() == false {
-        fs::create_dir("assets/").expect("Assets folder creation failed.");
+        fs::create_dir("assets/").expect("Assets Folder Creation Error");
     }
     //check if assets exist
     if (Path::new(airportfile).exists() == false) || Path::new(runwayfile).exists() == false {
-        assetsupdate(false).expect("Updating assets failed.");
+        assetsupdate(false).expect("Assets Update Error");
     }
 
     let airportdata = fs::read_to_string(airportfile).expect("File Read Error");
