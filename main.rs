@@ -662,6 +662,11 @@ fn airportinfo(airport: &Airport, runways: &Vec<Runway>) {
     //find runways
     let mut runwaycount: i8 = 0;
     for runway in runways {
+        //construct runway delimiter and add if runway has low end and high end id (ignore for things like helipads)
+        let mut runwaydelim: String = "".to_string();
+        if (runway.le_ident.chars().count() > 0) && (runway.he_ident.chars().count() > 0) {
+            runwaydelim = "/".to_string();
+        }
         if runway.airport_ident == airport.ident {
             //ensure runway is not closed
             if runway.closed == 0 {
@@ -670,7 +675,7 @@ fn airportinfo(airport: &Airport, runways: &Vec<Runway>) {
                     println!("");
                     println!("{}", "Runways:".yellow());
                 }
-                println!("[{}/{}] - {} x {} ft", runway.le_ident.green().bold(), runway.he_ident.green().bold(), runway.length_ft, runway.width_ft);
+                println!("[{}{}{}] - {} x {} ft", runway.le_ident.green().bold(), runwaydelim, runway.he_ident.green().bold(), runway.length_ft, runway.width_ft);
                 runwaycount += 1;
             }
         }
