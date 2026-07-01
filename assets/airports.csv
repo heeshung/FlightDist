@@ -42690,7 +42690,7 @@
 3922,"KTIW","medium_airport","Tacoma Narrows Airport",47.267407,-122.577295,294,"NA","US","US-WA","Tacoma","yes","KTIW","TIW","KTIW","TIW",,"https://en.wikipedia.org/wiki/Tacoma_Narrows_Airport",
 3923,"KTIX","medium_airport","Space Coast Regional Airport",28.514799118042,-80.799201965332,34,"NA","US","US-FL","Titusville","no","KTIX","TIX","KTIX","TIX",,"https://en.wikipedia.org/wiki/Space_Coast_Regional_Airport",
 21197,"KTKC","small_airport","Tracy Municipal Airport",44.2491,-95.6073,1340,"NA","US","US-MN","Tracy","no",,,"KTKC","TKC",,"https://en.wikipedia.org/wiki/Tracy_Municipal_Airport_(Minnesota)",
-21198,"KTKI","small_airport","McKinney National Airport",33.177898,-96.5905,585,"NA","US","US-TX","Dallas","no",,,"KTKI","TKI","https://www.flytki.com/","https://en.wikipedia.org/wiki/McKinney_National_Airport","Collin County Regional Airport at McKinney"
+21198,"KTKI","small_airport","McKinney National Airport",33.177898,-96.5905,585,"NA","US","US-TX","Dallas","no","KTKI","DTX","KTKI","TKI","https://www.flytki.com/","https://en.wikipedia.org/wiki/McKinney_National_Airport","Collin County Regional Airport at McKinney"
 21199,"KTKO","small_airport","Mankato Airport",39.804953,-98.220606,1859,"NA","US","US-KS","Mankato","no",,,"KTKO","TKO",,"https://en.wikipedia.org/wiki/Mankato_Airport","Mankato Regional"
 21200,"KTKV","small_airport","Tomahawk Regional Airport",45.469101,-89.805702,1487,"NA","US","US-WI","Tomahawk","no",,,"KTKV","TKV","http://www.tomahawkregionalairport.com/","https://en.wikipedia.org/wiki/Tomahawk_Regional_Airport","WI46"
 21201,"KTKX","small_airport","Kennett Memorial Airport",36.2258987427,-90.0365982056,262,"NA","US","US-MO","Kennett","no","KTKX","KNT","KTKX","TKX","http://www.ktkx.us/","https://en.wikipedia.org/wiki/Kennett_Memorial_Airport",
@@ -65154,7 +65154,7 @@
 604547,"TH-0063","heliport","Nong Phai Lom Police Heliport",14.696005,101.491138,1047,"AS","TH","TH-30","Nong Phai Lom","no",,,,,,,
 604548,"TH-0064","small_airport","Camp Suranaree Airport",14.954251,102.073866,643,"AS","TH","TH-30","Nong Phai Lom","no",,,,,,,
 604550,"TH-0065","heliport","Kanchanaburi Police Heliport",14.113861,99.662957,108,"AS","TH","TH-30","Ban Huai Saphan","no",,,,,,,"บ้านห้วยสะพาน"
-604772,"TH-0066","heliport","CAVPAD",13.772287,100.543468,,"AS","TH","TH-10",,"no",,,,,,,
+604772,"TH-0066","heliport","CAVPAD Helicopter Field",13.772071,100.543794,22,"AS","TH","TH-10","Phaya Thai","no",,,,,,,
 313984,"THW","seaplane_base","Trincomalee Harbor Waterdrome",8.56,81.22,0,"AS","LK","LK-5","Trincomalee","no",,"THW",,,,,
 6369,"TIST","large_airport","Cyril E. King Airport",18.337091,-64.977251,23,"NA","VI","VI-ST","Charlotte Amalie","yes","TIST","STT","TIST","STT","http://www.viport.com/airports.html","https://en.wikipedia.org/wiki/Cyril_E._King_Airport","Harry S. Truman Airport"
 6370,"TISX","medium_airport","Henry E. Rohlsen Airport",17.701413,-64.802608,74,"NA","VI","VI-SC","Christiansted","yes","TISX","STX","TISX","STX","https://www.viport.com/herastx","https://en.wikipedia.org/wiki/Henry_E._Rohlsen_Airport","St Croix"
@@ -65352,7 +65352,7 @@
 44778,"TR-0014","small_airport","Aksaray Airport",38.314704,33.8055,,"AS","TR","TR-68","Aksaray","no",,,,,,,
 44932,"TR-0015","small_airport","Boranköy Air Base",38.4689457144,38.3651590347,,"AS","TR","TR-44","Battalgazi","no",,,,,,,
 44780,"TR-0016","closed","Balıkesir Manyas Airfield",40.115021,27.93894,56,"AS","TR","TR-10","Manyas","no",,,,,,,
-44782,"TR-0018","small_airport","Bolu",40.748611,31.651667,2441,"AS","TR","TR-14","Bolu","no",,,,,"https://ais.ibosoft.net.tr/",,
+44782,"TR-0018","small_airport","Bolu Airfield",40.748611,31.651667,2441,"AS","TR","TR-14","Bolu","no",,,,"LT1401","https://ais.ibosoft.net.tr/",,
 44783,"TR-0019","closed","Demirhanlı Airfield",41.717014,26.739527,371,"AS","TR","TR-22","Demirhanlı","no",,,,,,,"Demirhanlı Havaalanı, Edirne Airport"
 44784,"TR-0020","closed","Çanakkale Çan Airfield",39.98899841308594,27.036800384521484,,"AS","TR","TR-17","Çan","no",,,,,,,
 44785,"TR-0021","medium_airport","Çukurhisar Airport",39.84389877319336,30.968000411987305,,"AS","TR","TR-26","Alpu","no",,,,,,,
