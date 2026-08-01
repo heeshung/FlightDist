@@ -12,6 +12,49 @@ use version_compare::Version;
 use rand::Rng;
 use terminal_hyperlink::Hyperlink;
 use splitty::*;
+use iocraft::prelude::*;
+use smol::{io, net, prelude::*, Unblock};
+
+#[derive(Default, Props)]
+struct Props<'a> {
+    text: &'a str,
+}
+
+#[derive(Clone)]
+struct User {
+    iata: String,
+    icao: String,
+    airportfaa: String,
+    name: String,
+    state: String,
+    statesuffix: String,
+    country_code: String,
+    distance: String,
+    totaldist: String,
+    unit: String
+}
+
+impl User {
+    fn new(iata: String, icao: String, airportfaa: String, name: String, state: String, statesuffix: String, country_code: String, distance: f64, totaldist: f64, unit: String) -> Self {
+        Self {
+            iata: iata.to_string(),
+            icao: icao.to_string(),
+            airportfaa: airportfaa.to_string(),
+            name: name.to_string(),
+            state: state.to_string(),
+            statesuffix: statesuffix.to_string(),
+            country_code: country_code.to_string(),
+            distance: format!("{:.1}", distance),
+            totaldist: format!("{:.1}", totaldist),
+            unit: unit.to_string()
+        }
+    }
+}
+
+#[derive(Default, Props)]
+struct UsersTableProps<'a> {
+    users: Option<&'a Vec<User>>,
+}
 
 #[derive(Debug, Deserialize)]
 struct Airport {
@@ -46,7 +89,7 @@ struct Response {
     tag_name: String
 }
 
-fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, version: &str, factypes: &Vec<&str>, unwrappedargs: String, argcounter: i32, argslen: usize, latestversion: &str) -> (i32, i32, f64) {
+fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, version: &str, factypes: &Vec<&str>, unwrappedargs: String, argcounter: i32, argslen: usize, latestversion: &str, users: &mut Vec<User>) -> (i32, i32, f64) {
 
     //initiialize variables
     let mut lat: f64 = 0.0;
@@ -164,12 +207,12 @@ fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, ver
         }
     }
 
-    if argcounter == 0 {
-        println!("");
-        println!("{}{}{}","IATA/ICAO - Airport Name".blue().bold(), "                                                                         Distance        ".blue().bold(), "Total".blue().bold());
-    }
+    //if argcounter == 0 {
+    //    println!("");
+    //    println!("{}{}{}","IATA/ICAO - Airport Name".blue().bold(), "                                                                         Distance        ".blue().bold(), "Total".blue().bold());
+    //}
 
-    println!("----------------------------------------------------------------------------------------------------------------------");
+    //println!("----------------------------------------------------------------------------------------------------------------------");
 
     for query in queries.iter() {
         airportfound = false;
@@ -449,7 +492,9 @@ fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, ver
             let paddingiata = paddingsafety(foundairport.iata_code.chars().count(), 3);
             let paddingicaofaa = paddingsafety(foundairport.icao_code.chars().count()+airportfaa.chars().count(), 4);
             let paddingname = paddingsafety(airportname.chars().count()+state.chars().count()+statesuffix.chars().count(), 77);
-            println!("{:>paddingiata$}/{:>paddingicaofaa$}{} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", foundairport.iata_code.green().bold(), foundairport.icao_code.green().bold(), airportfaa.yellow(), airportname, airportnametrail, state.purple().bold(), statesuffix.purple().bold(), foundairport.iso_country.purple().bold(), distance, unit, totaldist, unit);
+
+            users.push(User::new(foundairport.iata_code.to_string(), foundairport.icao_code.to_string(), airportfaa.to_string(), airportname.to_string(), state.to_string(), statesuffix.to_string(), foundairport.iso_country.clone(), distance, totaldist, unit.to_string()));
+            //println!("{:>paddingiata$}/{:>paddingicaofaa$}{} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", foundairport.iata_code.green().bold(), foundairport.icao_code.green().bold(), airportfaa.yellow(), airportname, airportnametrail, state.purple().bold(), statesuffix.purple().bold(), foundairport.iso_country.purple().bold(), distance, unit, totaldist, unit);
         }
         else {
             //truncate query if too long
@@ -462,7 +507,7 @@ fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, ver
             else{
                 queryname = &query;
             }
-            println!("{}{} {}", queryname.cyan(), querytrail.cyan(), "could not be found.");
+            //println!("{}{} {}", queryname.cyan(), querytrail.cyan(), "could not be found.");
         }
     }
 
@@ -489,7 +534,7 @@ fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, ver
     
     //only print newline for last iteration
     if argcounter == (argslen as i32)-1 {
-        println!("======================================================================================================================");
+        //println!("======================================================================================================================");
         return (6, counter, totaldist);
     }
     return (0, counter, totaldist);
@@ -703,6 +748,15 @@ fn distancecalc(lathold: f64, lonhold: f64, lat: f64, lon: f64, unit: &str) -> f
 }
 
 fn helpdisp() {
+
+    element! {
+        View(border_style: BorderStyle::Round, border_color: Color::Cyan) {
+            Text(content: "The number of the day is... ")
+            Text(color: Color::Green, weight: Weight::Bold, content: 43.to_string())
+            Text(content: "!")
+        }
+    }
+    .print();
     println!("{}", "Search Function".yellow().bold());
     println!("Enter single search term to use search function.");
     println!("");
@@ -846,6 +900,98 @@ async fn versioncheck() -> Result<String, Box<dyn std::error::Error>> {
     Ok(resp.tag_name)
 }
 
+#[component]
+fn UsersTable<'a>(props: &UsersTableProps<'a>) -> impl Into<AnyElement<'a>> {
+    element! {
+        View(
+            margin_top: 1,
+            margin_bottom: 1,
+            flex_direction: FlexDirection::Column,
+            width: 118,
+            border_style: BorderStyle::Round,
+            border_color: Color::Cyan,
+        ) {
+            View(border_style: BorderStyle::Single, border_edges: Edges::Bottom, border_color: Color::Grey) {
+                View(justify_content: JustifyContent::End, padding_left: 1) {
+                    Text(content: "IATA", weight: Weight::Bold, color: Color::Blue)
+                }
+
+                View() {
+                    Text(content: "/", weight: Weight::Bold, color: Color::Blue)
+                }
+
+                View(padding_right: 3) {
+                    Text(content: "ICAO", weight: Weight::Bold, color: Color::Blue)
+                }
+
+                View(width: 63) {
+                    Text(content: "Airport Name", weight: Weight::Bold, color: Color::Blue)
+                }
+
+                View(width: 14, justify_content: JustifyContent::End) {
+                    Text(content: "Country", weight: Weight::Bold, color: Color::Blue)
+                }
+
+                View(width: 13, justify_content: JustifyContent::End) {
+                    Text(content: "Distance", weight: Weight::Bold, color: Color::Blue)
+                }
+                View(width: 12, justify_content: JustifyContent::End) {
+                    Text(content: "Total", weight: Weight::Bold, color: Color::Blue)
+                }
+            }
+
+            #(props.users.map(|users| users.iter().enumerate().map(|(i, user)| element! {
+                View(background_color: if i % 2 == 0 { None } else { Some(Color::DarkGrey) }) {
+                    View(width:5, justify_content: JustifyContent::End, padding_left: 2) {
+                        Text(content: user.iata.to_string(), weight: Weight::Bold, color: Color::Green)
+                    }
+
+                    View(justify_content: JustifyContent::End) {
+                        Text(content: "/")
+                    }
+
+                    View(width: 7, padding_right: 3) {
+                        Text(content: user.airportfaa.to_string(), weight: Weight::Bold, color: Color::Yellow)
+                        Text(content: user.icao.to_string(), weight: Weight::Bold, color: Color::Green)
+                    }
+
+                    View(width: 72, justify_content: JustifyContent::Start, padding_right: 2) {
+                        Text(content: user.name.clone())
+                    }
+
+                    View(width: 2, justify_content: JustifyContent::End) {
+                        Text(content: user.state.clone(), color: Color::Magenta)
+                    }
+
+                    View(width: 1, justify_content: JustifyContent::End) {
+                        Text(content: user.statesuffix.clone(), color: Color::Magenta)
+                    }
+
+                    View(width: 5, justify_content: JustifyContent::End, padding_right: 3) {
+                        Text(content: user.country_code.clone(), color: Color::Magenta)
+                    }
+
+                    View(width: 8, justify_content: JustifyContent::End, padding_right: 1) {
+                        Text(content: user.distance.clone())
+                    }
+
+                    View(width: 4, justify_content: JustifyContent::End, padding_right: 2) {
+                        Text(content: user.unit.clone())
+                    }
+
+                    View(width: 8, justify_content: JustifyContent::End, padding_right: 1) {
+                        Text(content: user.totaldist.to_string())
+                    }
+
+                    View(width: 2, justify_content: JustifyContent::End) {
+                        Text(content: user.unit.clone())
+                    }
+                }
+            })).into_iter().flatten())
+        }
+    }
+}
+
 fn main() {
 
     //set version
@@ -923,20 +1069,36 @@ fn main() {
     //initialize prompt history
     let mut history = BasicHistory::new().no_duplicates(true);
 
-    println!("{}{}", "FlightDist v".yellow().bold(), version.yellow().bold());
-    
+    element! {
+        View(border_style: BorderStyle::Round, border_color: Color::Cyan) {
+            Text(color: Color::Yellow, weight: Weight::Bold, content: "FlightDist ")
+            Text(color: Color::Magenta, weight: Weight::Bold, content: "v")
+            Text(color: Color::Magenta, weight: Weight::Bold, content: version)
+        }
+    }
+    .print();
+
+    element! {
+        View(border_style: BorderStyle::None, padding_left: 2) {
+            Text(color: Color::DarkGrey, content: "For help, type ")
+            Text(color: Color::Cyan, content: "help")
+            Text(color: Color::DarkGrey, content: ".")
+        }
+    }
+    .print();
+        
     //check if latest version
     let latestversion = versioncheck().unwrap_or("".to_string());
     let latestversionunwrapped = Version::from(&latestversion).unwrap();
     let versionunwrapped = Version::from(version).unwrap();
-    if versionunwrapped < latestversionunwrapped {
-        println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type ", "update".cyan(), ".");
-    }
+    //if versionunwrapped < latestversionunwrapped {
+    //    println!("{}{}{} {}{}{}", "A new version (", latestversion.yellow(), ") is available.", "To update, type ", "update".cyan(), ".");
+    //}
 
-    println!("For help, type {}.", "help".cyan());
     println!("");
 
     loop {
+        let mut users: Vec<User> = vec![];
         let unwrappedargs: String = Input::new().with_prompt(":").history_with(&mut history).interact_text().unwrap();
         let splitargs = split_unquoted_char(&unwrappedargs, ';').unwrap_quotes(false);
         let splitargcollection = splitargs.collect::<Vec<&str>>();
@@ -948,7 +1110,7 @@ fn main() {
         let mut grtotaldist: f64 = 0.0;
 
         for args in &splitargcollection {
-            let result = queryhandler(&airports, &runways, unit, version, &factypes, args.to_string(), argcounter, splitargcollection.len(), &latestversion);
+            let result = queryhandler(&airports, &runways, unit, version, &factypes, args.to_string(), argcounter, splitargcollection.len(), &latestversion, &mut users);
 
             //increment argcounter
             argcounter += 1;
@@ -992,13 +1154,14 @@ fn main() {
                 }
                 let grpaddingcounter = paddingsafety(grtotalflightssuffix.chars().count()+grtotalflights.to_string().chars().count(), 103);
                 let grtotaldistformat = format!("{:.1}", grtotaldist);
-                if grtotalflights > 0 {
-                    println!("{}     {} {}{:>grpaddingcounter$} {}", "Total:".red().bold(), grtotalflights.to_string().cyan().bold(), grtotalflightssuffix.bold(), grtotaldistformat.to_string().cyan().bold(), unit.bold());
-                }
-                else {
-                    println!("{}     {} {}{:>95} {}", "Total:".red().bold(), "0".cyan().bold(), "flights".bold(), "0".cyan().bold(), unit.bold());
-                }
-                println!("");
+                //if grtotalflights > 0 {
+                //    println!("{}     {} {}{:>grpaddingcounter$} {}", "Total:".red().bold(), grtotalflights.to_string().cyan().bold(), grtotalflightssuffix.bold(), grtotaldistformat.to_string().cyan().bold(), unit.bold());
+                //}
+                //else {
+                //    println!("{}     {} {}{:>95} {}", "Total:".red().bold(), "0".cyan().bold(), "flights".bold(), "0".cyan().bold(), unit.bold());
+                //}
+                //println!("");
+                element!(UsersTable(users: &users)).print();
             }
         }
     }

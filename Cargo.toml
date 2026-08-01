@@ -1,6 +1,6 @@
 [package]
 name = "FlightDist"
-version = "1.7.10"
+version = "0.2.0-experimental"
 edition = "2024"
 
 [dependencies]
@@ -21,6 +21,8 @@ tempfile = "3.24.0"
 press-btn-continue = "0.2.0"
 rand = "0.9.2"
 splitty = "1.0.2"
+iocraft = "0.8.4"
+smol = "2.0.2"
 
 [[bin]]
 name = "FlightDist"
