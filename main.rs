@@ -430,8 +430,8 @@ fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, ver
             let mut airportnametrail = "";
             //truncate airport name if too long
             let mut airportname: &str = &foundairport.name;
-            if airportname.chars().count()>74 {
-                airportname = &airportname[..71];
+            if airportname.chars().count()>73 {
+                airportname = &airportname[..70];
                 airportnametrail = "...";
             }
             let mut state = "";
@@ -448,8 +448,8 @@ fn queryhandler(airports: &Vec<&Airport>, runways: &Vec<Runway>, unit: &str, ver
             }
             let paddingiata = paddingsafety(foundairport.iata_code.chars().count(), 3);
             let paddingicaofaa = paddingsafety(foundairport.icao_code.chars().count()+airportfaa.chars().count(), 4);
-            let paddingname = paddingsafety(airportname.chars().count()+state.chars().count()+statesuffix.chars().count(), 77);
-            println!("{:>paddingiata$}/{:>paddingicaofaa$}{} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", foundairport.iata_code.green().bold(), foundairport.icao_code.green().bold(), airportfaa.yellow(), airportname, airportnametrail, state.purple().bold(), statesuffix.purple().bold(), foundairport.iso_country.purple().bold(), distance, unit, totaldist, unit);
+            let paddingname = paddingsafety(airportname.chars().count()+state.chars().count()+statesuffix.chars().count(), 76);
+            println!("{}{:>paddingiata$}/{:>paddingicaofaa$}{} - {}{:>paddingname$} [{}{}{}] {:>8.1} {}, {:>8.1} {}", " ", foundairport.iata_code.green().bold(), foundairport.icao_code.green().bold(), airportfaa.yellow(), airportname, airportnametrail, state.purple().bold(), statesuffix.purple().bold(), foundairport.iso_country.purple().bold(), distance, unit, totaldist, unit);
         }
         else {
             //truncate query if too long
