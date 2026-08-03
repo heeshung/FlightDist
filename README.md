@@ -1,6 +1,6 @@
 # FlightDist
 
-FlightDist is a versatile and fast flight distance calculator.
+FlightDist is a versatile and fast flight distance calculator, utilizing Vincenty's Inverse Formula.
 
 ## Usage
 
